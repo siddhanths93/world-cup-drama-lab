@@ -42,9 +42,19 @@ def utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-def normalize_name(value: str) -> str:
+def normalize_name(value: str | None) -> str:
+    """Normalize external API team names safely.
+
+    football-data.org can return null team names for not-yet-known knockout
+    placeholders such as TBD. Returning an empty string lets the sync skip those
+    rows instead of crashing.
+    """
+    if value is None:
+        return ""
+
     return (
-        value.lower()
+        str(value)
+        .lower()
         .replace("&", "and")
         .replace(".", "")
         .replace("-", " ")
@@ -170,8 +180,14 @@ def update_matches_from_api(existing, api_matches, team_lookup):
     skipped = []
 
     for item in api_matches:
-        home_name = item.get("homeTeam", {}).get("name", "")
-        away_name = item.get("awayTeam", {}).get("name", "")
+        home_name = (item.get("homeTeam") or {}).get("name")
+        away_name = (item.get("awayTeam") or {}).get("name")
+
+        # Knockout placeholders may come through as null/TBD before teams are known.
+        # Skip them now; they can be added once the API returns real team names.
+        if not home_name or not away_name:
+            skipped.append(f"Skipped TBD/unassigned fixture: {home_name} vs {away_name}")
+            continue
 
         home_id = team_lookup.get(normalize_name(home_name))
         away_id = team_lookup.get(normalize_name(away_name))
