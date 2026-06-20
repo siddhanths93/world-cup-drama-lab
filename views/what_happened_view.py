@@ -178,12 +178,24 @@ def _render_top_stories(data, stories):
             )
 
 
+def _get_query_match_id():
+    """Read selected recap id from URL query params across Streamlit versions."""
+    try:
+        value = st.query_params.get("recap_match")
+    except Exception:
+        value = None
+
+    if isinstance(value, list):
+        return value[0] if value else None
+    return value
+
+
 def _render_clickable_recap_board(stories):
     st.markdown(
         """
         <div class="wcdl-section-title">
           <h3>Match recap board</h3>
-          <div class="wcdl-section-note">Pick a match and the detailed recap below will update.</div>
+          <div class="wcdl-section-note">Click a match card and the detailed recap below will update.</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -194,42 +206,37 @@ def _render_clickable_recap_board(stories):
         ["Most entertaining", "Most dramatic", "Most misleading scoreline", "Biggest margin", "Latest first"],
     )
     ranked = _rank_stories(stories, sort_mode)[:8]
+    ranked_ids = {match["id"] for match, _ in ranked}
 
-    if "selected_match_id" not in st.session_state:
+    selected_from_url = _get_query_match_id()
+    if selected_from_url in ranked_ids:
+        st.session_state["selected_match_id"] = selected_from_url
+
+    if "selected_match_id" not in st.session_state or st.session_state["selected_match_id"] not in ranked_ids:
         st.session_state["selected_match_id"] = ranked[0][0]["id"]
 
     cols = st.columns(4)
     for i, (match, story) in enumerate(ranked):
         with cols[i % 4]:
             selected = st.session_state.get("selected_match_id") == match["id"]
-            border = "#BE123C" if selected else "rgba(15,23,42,0.14)"
-            bg = "#FFF7ED" if selected else "rgba(255,255,255,0.72)"
+            selected_class = " wcdl-recap-card-selected" if selected else ""
+            card_url = f"?recap_match={match['id']}#detailed-recap"
+
             st.markdown(
                 f"""
-                <div style="
-                    background:{bg};
-                    border:1px solid {border};
-                    border-radius:10px;
-                    padding:12px 12px 10px 12px;
-                    min-height:112px;
-                    margin-bottom:8px;
-                    box-shadow:0 8px 18px rgba(15,23,42,0.06);
-                ">
-                  <div style="font-size:.72rem;text-transform:uppercase;color:#64748B;font-weight:850;">
-                    Group {match['group']} · {match['date']}
+                <a class="wcdl-recap-card-link" href="{card_url}" target="_self">
+                  <div class="wcdl-recap-card{selected_class}">
+                    <div class="wcdl-recap-card-meta">Group {match['group']} · {match['date']}</div>
+                    <div class="wcdl-recap-card-title">
+                      {escape_html(story['homeTeam'])} {escape_html(story['score'])} {escape_html(story['awayTeam'])}
+                    </div>
+                    <div style="margin-top:10px;">{badge_html(story['matchType'], MATCH_TYPE_COLORS)}</div>
+                    <div class="wcdl-recap-card-hint">Click to open recap</div>
                   </div>
-                  <div style="font-weight:900;color:#0F172A;line-height:1.2;margin-top:7px;">
-                    {escape_html(story['homeTeam'])} {escape_html(story['score'])} {escape_html(story['awayTeam'])}
-                  </div>
-                  <div style="margin-top:8px;">{badge_html(story['matchType'], MATCH_TYPE_COLORS)}</div>
-                </div>
+                </a>
                 """,
                 unsafe_allow_html=True,
             )
-            if st.button("Open recap", key=f"open_{match['id']}", use_container_width=True):
-                st.session_state["selected_match_id"] = match["id"]
-                st.rerun()
-
 
 def render(data):
     teams = data["team_by_id"]
@@ -238,7 +245,15 @@ def render(data):
     completed.sort(key=lambda m: m["date"])
     stories = [(m, generate_match_story(m, teams, matches)) for m in completed]
 
-
+    st.markdown(
+        """
+        <div class="wcdl-section-title">
+          <h3>What Happened</h3>
+          <div class="wcdl-section-note">Completed matches translated into tournament stories.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     if not stories:
         st.info("No completed matches are available in the local dataset yet.")
@@ -258,6 +273,7 @@ def render(data):
 
     st.markdown(
         """
+        <div id="detailed-recap"></div>
         <div class="wcdl-section-title">
           <h3>Detailed recap</h3>
           <div class="wcdl-section-note">The short version, verdict, mood, and what it means.</div>

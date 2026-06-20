@@ -509,6 +509,55 @@ header {visibility: hidden;}
   margin-top:12px;
 }
 
+
+/* Clickable recap cards */
+.wcdl-recap-card-link {
+  display: block;
+  text-decoration: none !important;
+  color: inherit !important;
+}
+.wcdl-recap-card {
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(15,23,42,0.14);
+  border-radius: 10px;
+  padding: 14px 16px 14px 16px;
+  min-height: 125px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 18px rgba(15,23,42,0.06);
+  transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease, background .14s ease;
+  cursor: pointer;
+}
+.wcdl-recap-card:hover {
+  transform: translateY(-2px);
+  border-color: #BE123C;
+  box-shadow: 0 14px 28px rgba(15,23,42,0.10);
+  background: #FFF7ED;
+}
+.wcdl-recap-card-selected {
+  border-color: #BE123C;
+  background: #FFF7ED;
+}
+.wcdl-recap-card-meta {
+  font-size: .72rem;
+  text-transform: uppercase;
+  color: #64748B;
+  font-weight: 900;
+  letter-spacing: .03em;
+}
+.wcdl-recap-card-title {
+  font-weight: 950;
+  color: #0F172A;
+  line-height: 1.2;
+  margin-top: 9px;
+  font-size: 1.05rem;
+}
+.wcdl-recap-card-hint {
+  color: #64748B;
+  margin-top: 9px;
+  font-size: .78rem;
+  font-weight: 750;
+}
+
 /* Tables */
 .wcdl-small-table {
   width:100%;
