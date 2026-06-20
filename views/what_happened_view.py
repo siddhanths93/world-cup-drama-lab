@@ -239,6 +239,7 @@ def render(data):
     stories = [(m, generate_match_story(m, teams, matches)) for m in completed]
 
 
+
     if not stories:
         st.info("No completed matches are available in the local dataset yet.")
         return

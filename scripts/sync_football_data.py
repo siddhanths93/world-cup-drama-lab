@@ -1,38 +1,28 @@
-
 """
 sync_football_data.py
 
-Optional refresh script for World Cup Drama Lab.
+Refreshes World Cup Drama Lab's local data from football-data.org.
 
-Purpose:
-- Pull latest delayed fixtures/scores from football-data.org free tier.
-- Update data/matches.json.
-- Keep the public app reading from local JSON only.
+Key design:
+- The Streamlit app never calls the API on page load.
+- This script runs on a schedule, updates data/matches.json, and exits.
+- GitHub Actions can run this once per hour and commit updated JSON back to the repo.
 
-Setup:
-1. Create a free football-data.org account.
-2. Set your API token:
-   Windows PowerShell:
-      $env:FOOTBALL_DATA_API_KEY="your_token_here"
-
-   macOS/Linux:
-      export FOOTBALL_DATA_API_KEY="your_token_here"
-
-3. Run from the project root:
-      python scripts/sync_football_data.py
-
-Notes:
-- Free tier is delayed and rate-limited.
-- This script does not run on every page load.
-- It does not add xG, lineups, cards, or live event data.
+Environment variables:
+- FOOTBALL_DATA_API_KEY: required
+- FOOTBALL_DATA_COMPETITION: optional, default WC
+- FOOTBALL_DATA_SEASON: optional, default 2026
+- SYNC_COOLDOWN_MINUTES: optional, default 10
+- FORCE_SYNC: optional, set to "true" to bypass cooldown
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -48,18 +38,26 @@ DEFAULT_COMPETITION = os.getenv("FOOTBALL_DATA_COMPETITION", "WC")
 DEFAULT_SEASON = os.getenv("FOOTBALL_DATA_SEASON", "2026")
 
 
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
 def normalize_name(value: str) -> str:
     return (
         value.lower()
         .replace("&", "and")
         .replace(".", "")
         .replace("-", " ")
+        .replace("’", "")
+        .replace("'", "")
         .replace("  ", " ")
         .strip()
     )
 
 
-def load_json(path: Path):
+def load_json(path: Path, default=None):
+    if not path.exists():
+        return default
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -70,12 +68,27 @@ def save_json(path: Path, payload):
         f.write("\n")
 
 
+def recently_synced(min_minutes: int) -> bool:
+    if os.getenv("FORCE_SYNC", "").lower() == "true":
+        return False
+
+    data = load_json(LAST_UPDATED_PATH, default={}) or {}
+    last_synced = data.get("lastSyncedAt")
+    if not last_synced:
+        return False
+
+    try:
+        last_dt = datetime.fromisoformat(last_synced.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+
+    return datetime.now(timezone.utc) - last_dt < timedelta(minutes=min_minutes)
+
+
 def api_get(path: str):
     token = os.getenv("FOOTBALL_DATA_API_KEY")
     if not token:
-        raise RuntimeError(
-            "Missing FOOTBALL_DATA_API_KEY. Set it first, then rerun this script."
-        )
+        raise RuntimeError("Missing FOOTBALL_DATA_API_KEY environment variable.")
 
     url = f"{API_BASE}{path}"
     req = Request(url, headers={"X-Auth-Token": token})
@@ -99,15 +112,15 @@ def football_data_status_to_local(status: str) -> str:
     return "scheduled"
 
 
-def make_team_lookup(existing_matches):
-    # We infer team names from the existing local file. If the external API uses a
-    # slightly different name, add an alias below.
-    names = set()
-    for m in existing_matches:
-        names.add(m["homeTeam"])
-        names.add(m["awayTeam"])
+def make_team_lookup(teams):
+    lookup = {}
+    for team in teams:
+        tid = team["id"]
+        name = team["name"]
+        lookup[normalize_name(name)] = tid
 
-    aliases = {
+    # Add common API/source aliases here as needed.
+    lookup.update({
         "usa": "usa",
         "united states": "usa",
         "united states of america": "usa",
@@ -115,24 +128,34 @@ def make_team_lookup(existing_matches):
         "czechia": "cze",
         "korea republic": "kor",
         "south korea": "kor",
-        "dr congo": "cod",
-        "congo dr": "cod",
+        "bosnia herzegovina": "bih",
+        "bosnia and herzegovina": "bih",
         "curacao": "cuw",
         "curaçao": "cuw",
         "ivory coast": "civ",
-        "côte d’ivoire": "civ",
         "cote divoire": "civ",
-    }
-    return aliases
+        "côte divoire": "civ",
+        "dr congo": "cod",
+        "congo dr": "cod",
+        "democratic republic of the congo": "cod",
+        "cape verde": "cpv",
+        "saudi arabia": "ksa",
+        "new zealand": "nzl",
+    })
+    return lookup
 
 
-def find_existing_match(existing_matches, home_id, away_id, date_prefix=None):
-    # Prefer exact home/away match.
+def find_existing_match(existing_matches, home_id, away_id, api_id=None, date_prefix=None):
+    if api_id is not None:
+        for idx, m in enumerate(existing_matches):
+            if str(m.get("externalId", "")) == str(api_id):
+                return idx
+
     for idx, m in enumerate(existing_matches):
         if m["homeTeam"] == home_id and m["awayTeam"] == away_id:
-            return idx
+            if date_prefix is None or str(m.get("date", "")).startswith(date_prefix):
+                return idx
 
-    # Some APIs may reverse home/away. Match by pair if needed.
     for idx, m in enumerate(existing_matches):
         if {m["homeTeam"], m["awayTeam"]} == {home_id, away_id}:
             if date_prefix is None or str(m.get("date", "")).startswith(date_prefix):
@@ -141,44 +164,41 @@ def find_existing_match(existing_matches, home_id, away_id, date_prefix=None):
     return None
 
 
-def main():
-    existing = load_json(MATCHES_PATH)
-    aliases = make_team_lookup(existing)
-
-    print(f"Fetching {DEFAULT_COMPETITION} {DEFAULT_SEASON} matches from football-data.org...")
-    payload = api_get(f"/competitions/{DEFAULT_COMPETITION}/matches?season={DEFAULT_SEASON}")
-
-    api_matches = payload.get("matches", [])
+def update_matches_from_api(existing, api_matches, team_lookup):
     updated_count = 0
+    added_count = 0
     skipped = []
 
     for item in api_matches:
         home_name = item.get("homeTeam", {}).get("name", "")
         away_name = item.get("awayTeam", {}).get("name", "")
 
-        home_id = aliases.get(normalize_name(home_name))
-        away_id = aliases.get(normalize_name(away_name))
+        home_id = team_lookup.get(normalize_name(home_name))
+        away_id = team_lookup.get(normalize_name(away_name))
 
         if not home_id or not away_id:
-            skipped.append(f"Could not map: {home_name} vs {away_name}")
+            skipped.append(f"Could not map team(s): {home_name} vs {away_name}")
             continue
 
         utc_date = item.get("utcDate", "")
         date_prefix = utc_date[:10] if utc_date else None
-        idx = find_existing_match(existing, home_id, away_id, date_prefix)
+        api_id = item.get("id")
+        idx = find_existing_match(existing, home_id, away_id, api_id=api_id, date_prefix=date_prefix)
 
-        score = item.get("score", {}).get("fullTime", {})
+        score = item.get("score", {}).get("fullTime", {}) or {}
         home_score = score.get("home")
         away_score = score.get("away")
-
         status = football_data_status_to_local(item.get("status"))
 
+        group_raw = item.get("group") or item.get("stage") or "TBD"
+        group = str(group_raw).replace("GROUP_", "").replace("Group ", "").replace("GROUP ", "")
+
         if idx is None:
-            group = item.get("group") or "TBD"
-            match_id = f"{home_id}-{away_id}-{date_prefix or item.get('id', 'match')}"
+            match_id = f"{home_id}-{away_id}-{date_prefix or api_id or 'match'}"
             existing.append({
                 "id": match_id,
-                "group": str(group).replace("GROUP_", "").replace("Group ", ""),
+                "externalId": api_id,
+                "group": group,
                 "homeTeam": home_id,
                 "awayTeam": away_id,
                 "homeScore": home_score,
@@ -186,51 +206,80 @@ def main():
                 "status": status,
                 "date": date_prefix or utc_date,
                 "events": [],
-                "source": "football-data.org-sync"
+                "source": "football-data.org-sync",
             })
+            added_count += 1
+            continue
+
+        m = existing[idx]
+        before = dict(m)
+
+        m["externalId"] = api_id
+        m["source"] = "football-data.org-sync"
+
+        if group and group != "TBD":
+            m["group"] = group
+
+        if status:
+            m["status"] = status
+
+        if date_prefix:
+            m["date"] = date_prefix
+
+        if home_score is not None:
+            m["homeScore"] = home_score
+
+        if away_score is not None:
+            m["awayScore"] = away_score
+
+        if m != before:
             updated_count += 1
-        else:
-            m = existing[idx]
-            changed = False
 
-            if status:
-                changed = changed or m.get("status") != status
-                m["status"] = status
+    return updated_count, added_count, skipped
 
-            if date_prefix:
-                changed = changed or m.get("date") != date_prefix
-                m["date"] = date_prefix
 
-            if home_score is not None:
-                changed = changed or m.get("homeScore") != home_score
-                m["homeScore"] = home_score
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true", help="Fetch and compare but do not write files.")
+    parser.add_argument("--force", action="store_true", help="Bypass cooldown.")
+    args = parser.parse_args()
 
-            if away_score is not None:
-                changed = changed or m.get("awayScore") != away_score
-                m["awayScore"] = away_score
+    cooldown = int(os.getenv("SYNC_COOLDOWN_MINUTES", "10"))
+    if not args.force and recently_synced(cooldown):
+        print(f"Skipped sync: last successful sync was less than {cooldown} minutes ago.")
+        return
 
-            m["source"] = "football-data.org-sync"
+    teams = load_json(DATA_DIR / "teams.json", default=[])
+    existing = load_json(MATCHES_PATH, default=[])
+    team_lookup = make_team_lookup(teams)
 
-            if changed:
-                updated_count += 1
+    print(f"Fetching {DEFAULT_COMPETITION} {DEFAULT_SEASON} matches from football-data.org...")
+    payload = api_get(f"/competitions/{DEFAULT_COMPETITION}/matches?season={DEFAULT_SEASON}")
+    api_matches = payload.get("matches", [])
 
-    save_json(MATCHES_PATH, existing)
-    save_json(LAST_UPDATED_PATH, {
-        "lastSyncedAt": datetime.now(timezone.utc).isoformat(),
+    updated_count, added_count, skipped = update_matches_from_api(existing, api_matches, team_lookup)
+
+    summary = {
+        "lastSyncedAt": utc_now_iso(),
         "source": "football-data.org",
         "competition": DEFAULT_COMPETITION,
         "season": DEFAULT_SEASON,
         "matchesReturned": len(api_matches),
-        "matchesUpdatedOrAdded": updated_count,
-        "skipped": skipped[:25],
-        "notes": "Free-tier scores/schedules may be delayed. Public app still reads from local JSON."
-    })
+        "matchesUpdated": updated_count,
+        "matchesAdded": added_count,
+        "skipped": skipped[:50],
+        "notes": "Free-tier scores/schedules may be delayed. Public app reads from local JSON.",
+    }
 
-    print(f"Done. Updated or added {updated_count} matches.")
-    if skipped:
-        print("Skipped mappings:")
-        for s in skipped[:10]:
-            print(f"- {s}")
+    print(json.dumps(summary, indent=2))
+
+    if args.dry_run:
+        print("Dry run complete. No files written.")
+        return
+
+    save_json(MATCHES_PATH, existing)
+    save_json(LAST_UPDATED_PATH, summary)
+    print("Local JSON updated.")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,44 @@
+name: Sync World Cup data
+
+on:
+  schedule:
+    # Runs once per hour. GitHub schedules use UTC and may be delayed by a few minutes.
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-worldcup-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run sync script
+        env:
+          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+          FOOTBALL_DATA_COMPETITION: WC
+          FOOTBALL_DATA_SEASON: "2026"
+          SYNC_COOLDOWN_MINUTES: "10"
+        run: |
+          python scripts/sync_football_data.py --force
+
+      - name: Commit updated data if changed
+        run: |
+          if [[ -n "$(git status --porcelain data/matches.json data/last_updated.json)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/matches.json data/last_updated.json
+            git commit -m "Auto-sync World Cup data"
+            git push
+          else
+            echo "No data changes to commit."
+          fi

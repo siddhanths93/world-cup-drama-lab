@@ -49,3 +49,26 @@ PowerShell:
 $env:FOOTBALL_DATA_API_KEY="your_token_here"
 python scripts/sync_football_data.py
 ```
+## Automated hourly refresh with GitHub Actions
+
+This repo includes:
+
+```text
+.github/workflows/sync-worldcup-data.yml
+scripts/sync_football_data.py
+```
+
+Set a GitHub secret named:
+
+```text
+FOOTBALL_DATA_API_KEY
+```
+
+Then the workflow runs once per hour and updates:
+
+```text
+data/matches.json
+data/last_updated.json
+```
+
+The Streamlit app still reads from local JSON. Visitors never call football-data.org directly.
