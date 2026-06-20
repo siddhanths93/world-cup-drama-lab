@@ -183,8 +183,6 @@ def update_matches_from_api(existing, api_matches, team_lookup):
         home_name = (item.get("homeTeam") or {}).get("name")
         away_name = (item.get("awayTeam") or {}).get("name")
 
-        # Knockout placeholders may come through as null/TBD before teams are known.
-        # Skip them now; they can be added once the API returns real team names.
         if not home_name or not away_name:
             skipped.append(f"Skipped TBD/unassigned fixture: {home_name} vs {away_name}")
             continue
