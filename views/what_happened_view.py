@@ -245,16 +245,6 @@ def render(data):
     completed.sort(key=lambda m: m["date"])
     stories = [(m, generate_match_story(m, teams, matches)) for m in completed]
 
-    st.markdown(
-        """
-        <div class="wcdl-section-title">
-          <h3>What Happened</h3>
-          <div class="wcdl-section-note">Completed matches translated into tournament stories.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     if not stories:
         st.info("No completed matches are available in the local dataset yet.")
         return
