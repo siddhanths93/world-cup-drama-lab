@@ -557,9 +557,9 @@
     "group": "E",
     "homeTeam": "ger",
     "awayTeam": "civ",
-    "homeScore": 0,
+    "homeScore": 2,
     "awayScore": 1,
-    "status": "live",
+    "status": "completed",
     "date": "2026-06-20",
     "events": [],
     "source": "football-data.org-sync"
