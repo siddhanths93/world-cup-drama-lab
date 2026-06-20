@@ -1,0 +1,122 @@
+[
+  {
+    "id": "A",
+    "name": "Group A",
+    "teamIds": [
+      "mex",
+      "kor",
+      "rsa",
+      "cze"
+    ]
+  },
+  {
+    "id": "B",
+    "name": "Group B",
+    "teamIds": [
+      "can",
+      "bih",
+      "qat",
+      "sui"
+    ]
+  },
+  {
+    "id": "C",
+    "name": "Group C",
+    "teamIds": [
+      "bra",
+      "mar",
+      "hai",
+      "sco"
+    ]
+  },
+  {
+    "id": "D",
+    "name": "Group D",
+    "teamIds": [
+      "usa",
+      "par",
+      "aus",
+      "tur"
+    ]
+  },
+  {
+    "id": "E",
+    "name": "Group E",
+    "teamIds": [
+      "ger",
+      "cuw",
+      "civ",
+      "ecu"
+    ]
+  },
+  {
+    "id": "F",
+    "name": "Group F",
+    "teamIds": [
+      "ned",
+      "jpn",
+      "tun",
+      "swe"
+    ]
+  },
+  {
+    "id": "G",
+    "name": "Group G",
+    "teamIds": [
+      "bel",
+      "egy",
+      "irn",
+      "nzl"
+    ]
+  },
+  {
+    "id": "H",
+    "name": "Group H",
+    "teamIds": [
+      "esp",
+      "cpv",
+      "ksa",
+      "uru"
+    ]
+  },
+  {
+    "id": "I",
+    "name": "Group I",
+    "teamIds": [
+      "fra",
+      "sen",
+      "nor",
+      "irq"
+    ]
+  },
+  {
+    "id": "J",
+    "name": "Group J",
+    "teamIds": [
+      "arg",
+      "alg",
+      "aut",
+      "jor"
+    ]
+  },
+  {
+    "id": "K",
+    "name": "Group K",
+    "teamIds": [
+      "por",
+      "cod",
+      "uzb",
+      "col"
+    ]
+  },
+  {
+    "id": "L",
+    "name": "Group L",
+    "teamIds": [
+      "eng",
+      "cro",
+      "gha",
+      "pan"
+    ]
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "tournamentName": "2026 FIFA World Cup",
+  "hosts": ["United States", "Canada", "Mexico"],
+  "groupStageStart": "2026-06-11",
+  "groupStageEnd": "2026-06-27",
+  "finalDate": "2026-07-19",
+  "numberOfGroups": 12,
+  "teamsPerGroup": 4,
+  "matchesPerTeamInGroup": 3,
+  "directQualifiersPerGroup": 2,
+  "bestThirdPlaceQualifiers": 8,
+  "totalKnockoutTeams": 32,
+  "knockoutRoundsAfterGroupStage": [
+    "Round of 32",
+    "Round of 16",
+    "Quarter-finals",
+    "Semi-finals",
+    "Final"
+  ],
+  "pointsForWin": 3,
+  "pointsForDraw": 1,
+  "pointsForLoss": 0,
+  "standingsTiebreakOrder": [
+    "points",
+    "goalDifference",
+    "goalsFor",
+    "headToHeadPoints",
+    "headToHeadGoalDifference",
+    "disciplinaryPoints",
+    "drawOfLots"
+  ],
+  "notes": "Direct-qualifier tiebreaks (rank 1-2 within a group) are fully implementable from goals/points alone for an MVP. Head-to-head and disciplinary tiebreaks are listed for completeness but are NOT required for MVP accuracy - approximate with points/GD/GF only and label any genuinely ambiguous case 'too close to call' rather than guessing. The eight-best-third-place ranking across all 12 groups is its own, more complex comparison (only the same three stats - points/GD/GF - are compared across groups per FIFA rules for this step, so MVP accuracy is achievable, but keep the UI language approximate per the product spec."
+}

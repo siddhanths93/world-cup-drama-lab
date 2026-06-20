@@ -1,0 +1,5 @@
+{
+  "lastSyncedAt": null,
+  "source": "local sample data",
+  "notes": "Run scripts/sync_football_data.py with a free football-data.org API key to refresh."
+}
