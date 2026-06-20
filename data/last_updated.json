@@ -1,11 +1,11 @@
 {
-  "lastSyncedAt": "2026-06-20T19:53:54+00:00",
+  "lastSyncedAt": "2026-06-20T21:25:14+00:00",
   "source": "football-data.org",
   "competition": "WC",
   "season": "2026",
   "matchesReturned": 104,
-  "matchesUpdated": 20,
-  "matchesAdded": 46,
+  "matchesUpdated": 1,
+  "matchesAdded": 0,
   "skipped": [
     "Could not map team(s): Australia vs Turkey",
     "Could not map team(s): Spain vs Cape Verde Islands",
