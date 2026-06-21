@@ -188,14 +188,32 @@ def find_existing_match(existing_matches, home_id, away_id, api_id=None, group=N
 def dedupe_matches(matches):
     """Remove duplicate local fixtures before saving.
 
-    This protects standings math even if a previous sync inserted duplicates.
+    Important:
+    For group-stage data, the same two teams can only play once in the same group.
+    So fixture identity is primarily group + unordered team pair, not date and not
+    even externalId. This cleans up old bad rows that were created when UTC/local
+    date shifts changed the derived local id.
+
+    For non-group/TBD knockout fixtures, fall back to externalId when available.
     """
     deduped = {}
 
+    def is_group_value(value):
+        return str(value or "").strip().upper() in set("ABCDEFGHIJKL")
+
     def key_for(m):
+        group = str(m.get("group", "")).strip().upper()
+        home = m.get("homeTeam")
+        away = m.get("awayTeam")
+
+        if is_group_value(group) and home and away:
+            teams = tuple(sorted([home, away]))
+            return ("group_fixture", group, teams[0], teams[1])
+
         if m.get("externalId"):
             return ("external", str(m["externalId"]))
-        return ("fixture", str(m.get("group", "")), m.get("homeTeam"), m.get("awayTeam"))
+
+        return ("fixture", group, home, away)
 
     def quality(m):
         return (
@@ -214,8 +232,16 @@ def dedupe_matches(matches):
 
         current = deduped[key]
         preferred, other = (m, current) if quality(m) >= quality(current) else (current, m)
+
+        # Merge useful fields while keeping the preferred scoring/status row.
         merged = dict(other)
         merged.update({k: v for k, v in preferred.items() if v is not None})
+
+        # Stabilize id after cleanup so future local fallback matching is predictable.
+        if key[0] == "group_fixture":
+            _, group, t1, t2 = key
+            merged["id"] = f"{t1}-{t2}-group-{group.lower()}"
+
         deduped[key] = merged
 
     return sorted(

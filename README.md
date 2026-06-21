@@ -44,3 +44,14 @@ FOOTBALL_DATA_API_KEY
 ```
 
 The deployed Streamlit app does not call football-data.org directly. It reads local JSON committed by the workflow.
+
+
+## If standings show duplicate matches
+
+Run:
+
+```cmd
+python scripts\dedupe_local_matches.py
+```
+
+Then commit `data/matches.json` and push.
