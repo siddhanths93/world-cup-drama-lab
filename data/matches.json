@@ -1,16 +1,5 @@
 [
   {
-    "id": "kor-cze-2026-06-11",
-    "group": "A",
-    "homeTeam": "kor",
-    "awayTeam": "cze",
-    "homeScore": 2,
-    "awayScore": 1,
-    "status": "completed",
-    "date": "2026-06-11",
-    "events": []
-  },
-  {
     "id": "mex-rsa-2026-06-11",
     "group": "A",
     "homeTeam": "mex",
@@ -19,7 +8,22 @@
     "awayScore": 0,
     "status": "completed",
     "date": "2026-06-11",
-    "events": []
+    "events": [],
+    "externalId": 537327,
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "kor-cze-2026-06-11",
+    "group": "A",
+    "homeTeam": "kor",
+    "awayTeam": "cze",
+    "homeScore": 2,
+    "awayScore": 1,
+    "status": "completed",
+    "date": "2026-06-12",
+    "events": [],
+    "externalId": 537328,
+    "source": "football-data.org-sync"
   },
   {
     "id": "can-bih-2026-06-12",
@@ -30,18 +34,9 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-12",
-    "events": []
-  },
-  {
-    "id": "usa-par-2026-06-12",
-    "group": "D",
-    "homeTeam": "usa",
-    "awayTeam": "par",
-    "homeScore": 4,
-    "awayScore": 1,
-    "status": "completed",
-    "date": "2026-06-12",
-    "events": []
+    "events": [],
+    "externalId": 537333,
+    "source": "football-data.org-sync"
   },
   {
     "id": "qat-sui-2026-06-13",
@@ -52,7 +47,9 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-13",
-    "events": []
+    "events": [],
+    "externalId": 537334,
+    "source": "football-data.org-sync"
   },
   {
     "id": "bra-mar-2026-06-13",
@@ -63,18 +60,35 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-13",
-    "events": []
+    "events": [],
+    "externalId": 537339,
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "usa-par-2026-06-12",
+    "group": "D",
+    "homeTeam": "usa",
+    "awayTeam": "par",
+    "homeScore": 4,
+    "awayScore": 1,
+    "status": "completed",
+    "date": "2026-06-13",
+    "events": [],
+    "externalId": 537345,
+    "source": "football-data.org-sync"
   },
   {
     "id": "sco-hai-2026-06-13",
     "group": "C",
     "homeTeam": "sco",
     "awayTeam": "hai",
-    "homeScore": 1,
-    "awayScore": 0,
+    "homeScore": 0,
+    "awayScore": 1,
     "status": "completed",
-    "date": "2026-06-13",
-    "events": []
+    "date": "2026-06-14",
+    "events": [],
+    "externalId": 537340,
+    "source": "football-data.org-sync"
   },
   {
     "id": "aus-tur-2026-06-14",
@@ -96,7 +110,9 @@
     "awayScore": 0,
     "status": "completed",
     "date": "2026-06-14",
-    "events": []
+    "events": [],
+    "externalId": 537352,
+    "source": "football-data.org-sync"
   },
   {
     "id": "ger-cuw-2026-06-14",
@@ -107,7 +123,9 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-14",
-    "events": []
+    "events": [],
+    "externalId": 537351,
+    "source": "football-data.org-sync"
   },
   {
     "id": "ned-jpn-2026-06-14",
@@ -118,7 +136,9 @@
     "awayScore": 2,
     "status": "completed",
     "date": "2026-06-14",
-    "events": []
+    "events": [],
+    "externalId": 537357,
+    "source": "football-data.org-sync"
   },
   {
     "id": "swe-tun-2026-06-14",
@@ -128,8 +148,10 @@
     "homeScore": 5,
     "awayScore": 1,
     "status": "completed",
-    "date": "2026-06-14",
-    "events": []
+    "date": "2026-06-15",
+    "events": [],
+    "externalId": 537358,
+    "source": "football-data.org-sync"
   },
   {
     "id": "bel-egy-2026-06-15",
@@ -140,18 +162,9 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-15",
-    "events": []
-  },
-  {
-    "id": "irn-nzl-2026-06-15",
-    "group": "G",
-    "homeTeam": "irn",
-    "awayTeam": "nzl",
-    "homeScore": 2,
-    "awayScore": 2,
-    "status": "completed",
-    "date": "2026-06-15",
-    "events": []
+    "events": [],
+    "externalId": 537363,
+    "source": "football-data.org-sync"
   },
   {
     "id": "esp-cpv-2026-06-15",
@@ -173,7 +186,22 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-15",
-    "events": []
+    "events": [],
+    "externalId": 537370,
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "irn-nzl-2026-06-15",
+    "group": "G",
+    "homeTeam": "irn",
+    "awayTeam": "nzl",
+    "homeScore": 2,
+    "awayScore": 2,
+    "status": "completed",
+    "date": "2026-06-16",
+    "events": [],
+    "externalId": 537364,
+    "source": "football-data.org-sync"
   },
   {
     "id": "fra-sen-2026-06-16",
@@ -184,18 +212,22 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-16",
-    "events": []
+    "events": [],
+    "externalId": 537391,
+    "source": "football-data.org-sync"
   },
   {
     "id": "nor-irq-2026-06-16",
     "group": "I",
     "homeTeam": "nor",
     "awayTeam": "irq",
-    "homeScore": 4,
-    "awayScore": 1,
+    "homeScore": 1,
+    "awayScore": 4,
     "status": "completed",
     "date": "2026-06-16",
-    "events": []
+    "events": [],
+    "externalId": 537392,
+    "source": "football-data.org-sync"
   },
   {
     "id": "arg-alg-2026-06-16",
@@ -205,8 +237,10 @@
     "homeScore": 3,
     "awayScore": 0,
     "status": "completed",
-    "date": "2026-06-16",
-    "events": []
+    "date": "2026-06-17",
+    "events": [],
+    "externalId": 537397,
+    "source": "football-data.org-sync"
   },
   {
     "id": "aut-jor-2026-06-17",
@@ -217,18 +251,9 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-17",
-    "events": []
-  },
-  {
-    "id": "col-uzb-2026-06-17",
-    "group": "K",
-    "homeTeam": "col",
-    "awayTeam": "uzb",
-    "homeScore": 3,
-    "awayScore": 1,
-    "status": "completed",
-    "date": "2026-06-17",
-    "events": []
+    "events": [],
+    "externalId": 537398,
+    "source": "football-data.org-sync"
   },
   {
     "id": "por-cod-2026-06-17",
@@ -239,7 +264,9 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-17",
-    "events": []
+    "events": [],
+    "externalId": 537403,
+    "source": "football-data.org-sync"
   },
   {
     "id": "eng-cro-2026-06-17",
@@ -250,7 +277,9 @@
     "awayScore": 2,
     "status": "completed",
     "date": "2026-06-17",
-    "events": []
+    "events": [],
+    "externalId": 537409,
+    "source": "football-data.org-sync"
   },
   {
     "id": "gha-pan-2026-06-17",
@@ -261,7 +290,9 @@
     "awayScore": 0,
     "status": "completed",
     "date": "2026-06-17",
-    "events": []
+    "events": [],
+    "externalId": 537410,
+    "source": "football-data.org-sync"
   },
   {
     "id": "cze-rsa-2026-06-18",
@@ -272,18 +303,9 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-18",
-    "events": []
-  },
-  {
-    "id": "mex-kor-2026-06-18",
-    "group": "A",
-    "homeTeam": "mex",
-    "awayTeam": "kor",
-    "homeScore": 1,
-    "awayScore": 0,
-    "status": "completed",
-    "date": "2026-06-18",
-    "events": []
+    "events": [],
+    "externalId": 537329,
+    "source": "football-data.org-sync"
   },
   {
     "id": "can-qat-2026-06-18",
@@ -294,7 +316,9 @@
     "awayScore": 0,
     "status": "completed",
     "date": "2026-06-18",
-    "events": []
+    "events": [],
+    "externalId": 537336,
+    "source": "football-data.org-sync"
   },
   {
     "id": "sui-bih-2026-06-18",
@@ -305,31 +329,256 @@
     "awayScore": 1,
     "status": "completed",
     "date": "2026-06-18",
-    "events": []
+    "events": [],
+    "externalId": 537335,
+    "source": "football-data.org-sync"
   },
   {
-    "id": "kor-rsa-2026-06-24",
-    "group": "A",
-    "homeTeam": "kor",
-    "awayTeam": "rsa",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
-    "date": "2026-06-24",
-    "dateConfirmed": false,
-    "events": []
+    "id": "col-uzb-2026-06-17",
+    "group": "K",
+    "homeTeam": "col",
+    "awayTeam": "uzb",
+    "homeScore": 1,
+    "awayScore": 3,
+    "status": "completed",
+    "date": "2026-06-18",
+    "events": [],
+    "externalId": 537404,
+    "source": "football-data.org-sync"
   },
   {
-    "id": "mex-cze-2026-06-24",
+    "id": "mex-kor-2026-06-18",
     "group": "A",
     "homeTeam": "mex",
-    "awayTeam": "cze",
+    "awayTeam": "kor",
+    "homeScore": 1,
+    "awayScore": 0,
+    "status": "completed",
+    "date": "2026-06-19",
+    "events": [],
+    "externalId": 537330,
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "sco-mar-2026-06-19",
+    "externalId": 537342,
+    "group": "C",
+    "homeTeam": "sco",
+    "awayTeam": "mar",
+    "homeScore": 0,
+    "awayScore": 1,
+    "status": "completed",
+    "date": "2026-06-19",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "usa-aus-2026-06-19",
+    "externalId": 537348,
+    "group": "D",
+    "homeTeam": "usa",
+    "awayTeam": "aus",
+    "homeScore": 2,
+    "awayScore": 0,
+    "status": "completed",
+    "date": "2026-06-19",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "bra-hai-2026-06-20",
+    "externalId": 537341,
+    "group": "C",
+    "homeTeam": "bra",
+    "awayTeam": "hai",
+    "homeScore": 3,
+    "awayScore": 0,
+    "status": "completed",
+    "date": "2026-06-20",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "ger-civ-2026-06-20",
+    "externalId": 537353,
+    "group": "E",
+    "homeTeam": "ger",
+    "awayTeam": "civ",
+    "homeScore": 2,
+    "awayScore": 1,
+    "status": "completed",
+    "date": "2026-06-20",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "ned-swe-2026-06-20",
+    "externalId": 537359,
+    "group": "F",
+    "homeTeam": "ned",
+    "awayTeam": "swe",
+    "homeScore": 5,
+    "awayScore": 1,
+    "status": "completed",
+    "date": "2026-06-20",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "ecu-cuw-2026-06-21",
+    "externalId": 537354,
+    "group": "E",
+    "homeTeam": "ecu",
+    "awayTeam": "cuw",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "completed",
+    "date": "2026-06-21",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "tun-jpn-2026-06-21",
+    "externalId": 537360,
+    "group": "F",
+    "homeTeam": "tun",
+    "awayTeam": "jpn",
+    "homeScore": 0,
+    "awayScore": 4,
+    "status": "completed",
+    "date": "2026-06-21",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "bel-irn-2026-06-21",
+    "externalId": 537365,
+    "group": "G",
+    "homeTeam": "bel",
+    "awayTeam": "irn",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "completed",
+    "date": "2026-06-21",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "esp-ksa-2026-06-21",
+    "externalId": 537371,
+    "group": "H",
+    "homeTeam": "esp",
+    "awayTeam": "ksa",
+    "homeScore": 4,
+    "awayScore": 0,
+    "status": "completed",
+    "date": "2026-06-21",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "nzl-egy-2026-06-22",
+    "externalId": 537366,
+    "group": "G",
+    "homeTeam": "nzl",
+    "awayTeam": "egy",
     "homeScore": null,
     "awayScore": null,
     "status": "scheduled",
-    "date": "2026-06-24",
-    "dateConfirmed": false,
-    "events": []
+    "date": "2026-06-22",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "fra-irq-2026-06-22",
+    "externalId": 537393,
+    "group": "I",
+    "homeTeam": "fra",
+    "awayTeam": "irq",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-22",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "arg-aut-2026-06-22",
+    "externalId": 537399,
+    "group": "J",
+    "homeTeam": "arg",
+    "awayTeam": "aut",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-22",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "nor-sen-2026-06-23",
+    "externalId": 537394,
+    "group": "I",
+    "homeTeam": "nor",
+    "awayTeam": "sen",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-23",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "jor-alg-2026-06-23",
+    "externalId": 537400,
+    "group": "J",
+    "homeTeam": "jor",
+    "awayTeam": "alg",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-23",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "por-uzb-2026-06-23",
+    "externalId": 537405,
+    "group": "K",
+    "homeTeam": "por",
+    "awayTeam": "uzb",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-23",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "eng-gha-2026-06-23",
+    "externalId": 537411,
+    "group": "L",
+    "homeTeam": "eng",
+    "awayTeam": "gha",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-23",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "pan-cro-2026-06-23",
+    "externalId": 537412,
+    "group": "L",
+    "homeTeam": "pan",
+    "awayTeam": "cro",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-23",
+    "events": [],
+    "source": "football-data.org-sync"
   },
   {
     "id": "bih-qat-2026-06-24",
@@ -341,7 +590,9 @@
     "status": "scheduled",
     "date": "2026-06-24",
     "dateConfirmed": false,
-    "events": []
+    "events": [],
+    "externalId": 537338,
+    "source": "football-data.org-sync"
   },
   {
     "id": "can-sui-2026-06-24",
@@ -353,6 +604,283 @@
     "status": "scheduled",
     "date": "2026-06-24",
     "dateConfirmed": false,
-    "events": []
+    "events": [],
+    "externalId": 537337,
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "mar-hai-2026-06-24",
+    "externalId": 537344,
+    "group": "C",
+    "homeTeam": "mar",
+    "awayTeam": "hai",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-24",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "sco-bra-2026-06-24",
+    "externalId": 537343,
+    "group": "C",
+    "homeTeam": "sco",
+    "awayTeam": "bra",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-24",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "col-cod-2026-06-24",
+    "externalId": 537406,
+    "group": "K",
+    "homeTeam": "col",
+    "awayTeam": "cod",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-24",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "kor-rsa-2026-06-24",
+    "group": "A",
+    "homeTeam": "kor",
+    "awayTeam": "rsa",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-25",
+    "dateConfirmed": false,
+    "events": [],
+    "externalId": 537332,
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "mex-cze-2026-06-24",
+    "group": "A",
+    "homeTeam": "mex",
+    "awayTeam": "cze",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-25",
+    "dateConfirmed": false,
+    "events": [],
+    "externalId": 537331,
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "cuw-civ-2026-06-25",
+    "externalId": 537356,
+    "group": "E",
+    "homeTeam": "cuw",
+    "awayTeam": "civ",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-25",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "ecu-ger-2026-06-25",
+    "externalId": 537355,
+    "group": "E",
+    "homeTeam": "ecu",
+    "awayTeam": "ger",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-25",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "jpn-swe-2026-06-25",
+    "externalId": 537362,
+    "group": "F",
+    "homeTeam": "jpn",
+    "awayTeam": "swe",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-25",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "tun-ned-2026-06-25",
+    "externalId": 537361,
+    "group": "F",
+    "homeTeam": "tun",
+    "awayTeam": "ned",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-25",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "par-aus-2026-06-26",
+    "externalId": 537350,
+    "group": "D",
+    "homeTeam": "par",
+    "awayTeam": "aus",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-26",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "nor-fra-2026-06-26",
+    "externalId": 537395,
+    "group": "I",
+    "homeTeam": "nor",
+    "awayTeam": "fra",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-26",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "sen-irq-2026-06-26",
+    "externalId": 537396,
+    "group": "I",
+    "homeTeam": "sen",
+    "awayTeam": "irq",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-26",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "egy-irn-2026-06-27",
+    "externalId": 537368,
+    "group": "G",
+    "homeTeam": "egy",
+    "awayTeam": "irn",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-27",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "nzl-bel-2026-06-27",
+    "externalId": 537367,
+    "group": "G",
+    "homeTeam": "nzl",
+    "awayTeam": "bel",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-27",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "uru-esp-2026-06-27",
+    "externalId": 537373,
+    "group": "H",
+    "homeTeam": "uru",
+    "awayTeam": "esp",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-27",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "cod-uzb-2026-06-27",
+    "externalId": 537408,
+    "group": "K",
+    "homeTeam": "cod",
+    "awayTeam": "uzb",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-27",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "col-por-2026-06-27",
+    "externalId": 537407,
+    "group": "K",
+    "homeTeam": "col",
+    "awayTeam": "por",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-27",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "cro-gha-2026-06-27",
+    "externalId": 537414,
+    "group": "L",
+    "homeTeam": "cro",
+    "awayTeam": "gha",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-27",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "pan-eng-2026-06-27",
+    "externalId": 537413,
+    "group": "L",
+    "homeTeam": "pan",
+    "awayTeam": "eng",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-27",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "alg-aut-2026-06-28",
+    "externalId": 537402,
+    "group": "J",
+    "homeTeam": "alg",
+    "awayTeam": "aut",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-28",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "jor-arg-2026-06-28",
+    "externalId": 537401,
+    "group": "J",
+    "homeTeam": "jor",
+    "awayTeam": "arg",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-28",
+    "events": [],
+    "source": "football-data.org-sync"
   }
 ]
