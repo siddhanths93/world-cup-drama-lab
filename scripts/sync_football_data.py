@@ -276,15 +276,16 @@ def update_matches_from_api(existing, api_matches, team_lookup):
         utc_date = item.get("utcDate", "")
         date_prefix = utc_date[:10] if utc_date else None
         api_id = item.get("id")
+
+        group_raw = item.get("group") or item.get("stage") or "TBD"
+        group = str(group_raw).replace("GROUP_", "").replace("Group ", "").replace("GROUP ", "")
+
         idx = find_existing_match(existing, home_id, away_id, api_id=api_id, group=group)
 
         score = item.get("score", {}).get("fullTime", {}) or {}
         home_score = score.get("home")
         away_score = score.get("away")
         status = football_data_status_to_local(item.get("status"))
-
-        group_raw = item.get("group") or item.get("stage") or "TBD"
-        group = str(group_raw).replace("GROUP_", "").replace("Group ", "").replace("GROUP ", "")
 
         if idx is None:
             match_id = f"{home_id}-{away_id}-{date_prefix or api_id or 'match'}"
