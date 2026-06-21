@@ -10,7 +10,6 @@ from lib.calculate_standings import calculate_standings
 from lib.qualification_status import calculate_qualification_status
 from lib.explain_soccer import explain_group, explain_team
 from lib.group_chaos import calculate_group_chaos, rank_group_chaos
-from lib.survival_card import build_survival_card
 from lib.ui_helpers import (
     card_html,
     stat_card_html,
@@ -87,7 +86,6 @@ def render(data):
     teams = data["team_by_id"]
     groups = data["groups"]
 
-
     chaos_rank = rank_group_chaos(data)[:4]
     st.markdown(
         """
@@ -131,35 +129,23 @@ def render(data):
 
         explanation = explain_group(group_id, rows, teams, style=style)
 
-        col_a, col_b = st.columns([1.2, 1])
-        with col_a:
-            st.markdown(
-                card_html(
-                    label="Plain English version",
-                    title=f"Group {group_id}: {chaos['label']}",
-                    body=(
-                        f'<div>{escape_html(explanation["translation"])}</div>'
-                        f'{progress_html(chaos["score"], chaos_color)}'
-                        f'<div style="color:#94A3B8;">{"; ".join(escape_html(r) for r in chaos["reasons"])}</div>'
-                    ),
-                    badge="Group Chaos",
-                    badge_color_map=PULSE_COLORS,
-                    accent=chaos_color,
-                    large=True,
+        st.markdown(
+            card_html(
+                label="Plain English version",
+                title=f"Group {group_id}: {chaos['label']}",
+                body=(
+                    f'<div>{escape_html(explanation["translation"])}</div>'
+                    f'{progress_html(chaos["score"], chaos_color)}'
+                    f'<div style="color:#64748B;">{"; ".join(escape_html(r) for r in chaos["reasons"])}</div>'
+                    f'<div style="margin-top:10px;color:#64748B;font-size:.9rem;">Use the sidebar for the full standings table.</div>'
                 ),
-                unsafe_allow_html=True,
-            )
-        with col_b:
-            st.markdown(
-                card_html(
-                    label="Current group table",
-                    title=f"Group {group_id}",
-                    body=_render_group_table(rows, teams),
-                    accent="#60A5FA",
-                    large=True,
-                ),
-                unsafe_allow_html=True,
-            )
+                badge="Group Chaos",
+                badge_color_map=PULSE_COLORS,
+                accent=chaos_color,
+                large=True,
+            ),
+            unsafe_allow_html=True,
+        )
 
     else:
         team_id = st.selectbox(
@@ -171,9 +157,20 @@ def render(data):
         rows = _standings_with_qualification(team["group"], data)
         row = next(r for r in rows if r["teamId"] == team_id)
 
-        card = build_survival_card(team_id, data)
-        _render_survival_card(card)
         explanation = explain_team(team_id, row, teams, style=style)
+        st.markdown(
+            card_html(
+                label="Team context",
+                title=f"{team['name']} in plain English",
+                body=(
+                    f"{escape_html(explanation['translation'])} "
+                    "For the full survival card and scenario testing, use the What Could Happen tab."
+                ),
+                accent="#1D4ED8",
+                large=True,
+            ),
+            unsafe_allow_html=True,
+        )
 
     col1, col2 = st.columns(2)
     with col1:

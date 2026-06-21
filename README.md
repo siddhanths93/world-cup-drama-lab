@@ -1,25 +1,19 @@
 # World Cup Drama Lab
 
-Matchday Magazine version.
+Cleaned portfolio MVP.
 
-This build fixes the hero rendering, makes tabs more visible, moves tournament pulse/top stories under **What Happened**, removes the realism-check clutter from the simulator, and improves the sidebar group-flow table.
+## What changed in this cleanup release
 
-## Main views
-
-1. **What Happened** — tournament pulse, top stories, clickable recap board, detailed match recap.
-2. **Explain Soccer** — group/team context explained for complete beginners and American sports fans.
-3. **What Could Happen** — compact qualification simulator with survival cards, remaining match predictions, and projected fate.
-
-## Copyright-safe visual approach
-
-This version does **not** use:
-- player photos
-- team crests
-- official FIFA branding
-- official tournament artwork
-- external visual assets
-
-The design uses only typography, layout, colors, abstract CSS shapes, local data, and generated text.
+- Fixed project hygiene: ignores `.venv/`, `.venv1/`, `.idea/workspace.xml`, caches, and local secret files.
+- Fixed sync identity logic so football-data.org date shifts do not create duplicate matches.
+- Added dedupe protection before saving synced match data.
+- Simplified the app structure:
+  - Compact header instead of large hero.
+  - One small app-level pulse strip.
+  - **What Happened** now focuses on Recap Board + Detailed Recap.
+  - **Explain Soccer** owns Group Chaos.
+  - **What Could Happen** owns Survival Card + Simulator.
+  - Standings live in the sidebar only.
 
 ## Run locally
 
@@ -28,47 +22,25 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-If `streamlit` is not recognized:
+If needed on Windows:
 
-```bash
-python -m streamlit run app.py
+```cmd
+.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-## Refresh data
-
-The app reads from `data/matches.json`. To refresh completed scores from football-data.org free tier:
+## Sync data locally
 
 ```cmd
 set FOOTBALL_DATA_API_KEY=your_token_here
-python scripts/sync_football_data.py
+.venv\Scripts\python.exe scripts\sync_football_data.py --force
 ```
 
-PowerShell:
+## Automated refresh
 
-```powershell
-$env:FOOTBALL_DATA_API_KEY="your_token_here"
-python scripts/sync_football_data.py
-```
-## Automated hourly refresh with GitHub Actions
-
-This repo includes:
-
-```text
-.github/workflows/sync-worldcup-data.yml
-scripts/sync_football_data.py
-```
-
-Set a GitHub secret named:
+GitHub Actions runs `.github/workflows/sync-worldcup-data.yml` hourly. It uses the GitHub repository secret:
 
 ```text
 FOOTBALL_DATA_API_KEY
 ```
 
-Then the workflow runs once per hour and updates:
-
-```text
-data/matches.json
-data/last_updated.json
-```
-
-The Streamlit app still reads from local JSON. Visitors never call football-data.org directly.
+The deployed Streamlit app does not call football-data.org directly. It reads local JSON committed by the workflow.

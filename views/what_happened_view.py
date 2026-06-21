@@ -249,8 +249,6 @@ def render(data):
         st.info("No completed matches are available in the local dataset yet.")
         return
 
-    _render_tournament_pulse(data)
-    _render_top_stories(data, stories)
     _render_clickable_recap_board(stories)
 
     story_by_id = {m["id"]: (m, s) for m, s in stories}
@@ -287,13 +285,13 @@ def render(data):
         unsafe_allow_html=True,
     )
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
 
     verdict = story["scorelineVerdict"]
     with col1:
         st.markdown(
             card_html(
-                label="Expected result",
+                label="Scoreline read",
                 title=verdict["verdict"],
                 body=badge_html(verdict["verdict"], VERDICT_COLORS),
                 footer=verdict["reason"],
@@ -307,36 +305,22 @@ def render(data):
     with col2:
         st.markdown(
             card_html(
-                label="Drama",
+                label="Match mood",
                 title=drama["label"],
                 body=progress_html(drama["score"], drama_color),
-                footer=f"{drama['score']}/100 tension",
+                footer=f"{drama['score']}/100. Closeness, stakes, and upset tension.",
                 accent=drama_color,
             ),
             unsafe_allow_html=True,
         )
 
-    entertainment = story["entertainmentMeter"]
-    entertainment_color = ENTERTAINMENT_COLORS.get(entertainment["label"], "#15803D")
     with col3:
-        st.markdown(
-            card_html(
-                label="Entertainment",
-                title=entertainment["label"],
-                body=progress_html(entertainment["score"], entertainment_color),
-                footer=f"{entertainment['score']}/100 spectacle",
-                accent=entertainment_color,
-            ),
-            unsafe_allow_html=True,
-        )
-
-    with col4:
         st.markdown(
             card_html(
                 label="Match type",
                 title=story["matchType"],
                 body=badge_html(story["matchType"], MATCH_TYPE_COLORS),
-                footer="A simple match personality label.",
+                footer="A simple personality label for the match.",
                 accent=MATCH_TYPE_COLORS.get(story["matchType"], "#64748B"),
             ),
             unsafe_allow_html=True,
@@ -375,15 +359,11 @@ def render(data):
         )
 
     st.markdown(
-        card_html(
-            label="Method note",
-            title="How these ratings are calculated",
-            body=(
-                "Drama is driven by tension, closeness, upset context, and qualification stakes. "
-                "Entertainment is driven more by goals and spectacle. "
-                "The scoreline verdict does not use xG or shot data in this free-data MVP."
-            ),
-            accent="#0F172A",
-        ),
+        """
+        <div class="wcdl-note-compact">
+          <strong>Method note</strong>
+          Match Mood = tension, closeness, upset context, and qualification stakes. No xG, shot data, or betting odds are used.
+        </div>
+        """,
         unsafe_allow_html=True,
     )

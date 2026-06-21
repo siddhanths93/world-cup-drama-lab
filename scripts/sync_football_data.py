@@ -155,23 +155,74 @@ def make_team_lookup(teams):
     return lookup
 
 
-def find_existing_match(existing_matches, home_id, away_id, api_id=None, date_prefix=None):
+def find_existing_match(existing_matches, home_id, away_id, api_id=None, group=None):
+    """Find an existing local fixture.
+
+    Rule:
+    1. Prefer the API's stable match id.
+    2. Fall back to group + home + away.
+    3. Fall back to group + unordered team pair.
+
+    Do NOT use date as identity. UTC/local date shifts can create duplicates.
+    """
     if api_id is not None:
         for idx, m in enumerate(existing_matches):
             if str(m.get("externalId", "")) == str(api_id):
                 return idx
 
     for idx, m in enumerate(existing_matches):
-        if m["homeTeam"] == home_id and m["awayTeam"] == away_id:
-            if date_prefix is None or str(m.get("date", "")).startswith(date_prefix):
-                return idx
+        if group is not None and str(m.get("group")) != str(group):
+            continue
+        if m.get("homeTeam") == home_id and m.get("awayTeam") == away_id:
+            return idx
 
     for idx, m in enumerate(existing_matches):
-        if {m["homeTeam"], m["awayTeam"]} == {home_id, away_id}:
-            if date_prefix is None or str(m.get("date", "")).startswith(date_prefix):
-                return idx
+        if group is not None and str(m.get("group")) != str(group):
+            continue
+        if {m.get("homeTeam"), m.get("awayTeam")} == {home_id, away_id}:
+            return idx
 
     return None
+
+
+def dedupe_matches(matches):
+    """Remove duplicate local fixtures before saving.
+
+    This protects standings math even if a previous sync inserted duplicates.
+    """
+    deduped = {}
+
+    def key_for(m):
+        if m.get("externalId"):
+            return ("external", str(m["externalId"]))
+        return ("fixture", str(m.get("group", "")), m.get("homeTeam"), m.get("awayTeam"))
+
+    def quality(m):
+        return (
+            1 if m.get("status") == "completed" else 0,
+            1 if m.get("homeScore") is not None and m.get("awayScore") is not None else 0,
+            1 if m.get("externalId") else 0,
+            1 if m.get("source") == "football-data.org-sync" else 0,
+            str(m.get("date", "")),
+        )
+
+    for m in matches:
+        key = key_for(m)
+        if key not in deduped:
+            deduped[key] = m
+            continue
+
+        current = deduped[key]
+        preferred, other = (m, current) if quality(m) >= quality(current) else (current, m)
+        merged = dict(other)
+        merged.update({k: v for k, v in preferred.items() if v is not None})
+        deduped[key] = merged
+
+    return sorted(
+        deduped.values(),
+        key=lambda m: (str(m.get("date", "")), str(m.get("group", "")), str(m.get("id", ""))),
+    )
+
 
 
 def update_matches_from_api(existing, api_matches, team_lookup):
@@ -183,6 +234,8 @@ def update_matches_from_api(existing, api_matches, team_lookup):
         home_name = (item.get("homeTeam") or {}).get("name")
         away_name = (item.get("awayTeam") or {}).get("name")
 
+        # Knockout placeholders may come through as null/TBD before teams are known.
+        # Skip them now; they can be added once the API returns real team names.
         if not home_name or not away_name:
             skipped.append(f"Skipped TBD/unassigned fixture: {home_name} vs {away_name}")
             continue
@@ -197,7 +250,7 @@ def update_matches_from_api(existing, api_matches, team_lookup):
         utc_date = item.get("utcDate", "")
         date_prefix = utc_date[:10] if utc_date else None
         api_id = item.get("id")
-        idx = find_existing_match(existing, home_id, away_id, api_id=api_id, date_prefix=date_prefix)
+        idx = find_existing_match(existing, home_id, away_id, api_id=api_id, group=group)
 
         score = item.get("score", {}).get("fullTime", {}) or {}
         home_score = score.get("home")
@@ -291,7 +344,7 @@ def main():
         print("Dry run complete. No files written.")
         return
 
-    save_json(MATCHES_PATH, existing)
+    save_json(MATCHES_PATH, dedupe_matches(existing))
     save_json(LAST_UPDATED_PATH, summary)
     print("Local JSON updated.")
 

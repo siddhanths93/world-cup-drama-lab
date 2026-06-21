@@ -2,9 +2,9 @@
 """
 app.py - World Cup Drama Lab
 
-Matchday Magazine version.
+Cleaned Matchday Magazine version.
 
-Copyright-safe/free-data constraints:
+Design rules:
 - no official FIFA logos or team crests
 - no player photos
 - no external images
@@ -16,7 +16,9 @@ import streamlit as st
 
 from lib.data_loader import load_all
 from lib.calculate_standings import calculate_standings
+from lib.tournament_pulse import build_tournament_pulse
 from lib.ui_helpers import inject_global_css, escape_html, card_html
+from views import what_happened_view, why_it_matters_view, what_could_happen_view
 
 
 st.set_page_config(
@@ -29,7 +31,6 @@ st.markdown(inject_global_css(), unsafe_allow_html=True)
 
 
 def _safe_html(html: str):
-    """Use Streamlit's HTML renderer when available to avoid markdown showing raw HTML."""
     if hasattr(st, "html"):
         st.html(html)
     else:
@@ -48,18 +49,16 @@ def _render_group_flow_sidebar(data):
 
     st.sidebar.markdown('<div class="wcdl-side-title">Group Flow</div>', unsafe_allow_html=True)
     st.sidebar.markdown(
-        '<div class="wcdl-side-note">Live-feeling tournament context from local JSON: standings, points, goal difference, and finished scores.</div>',
+        '<div class="wcdl-side-note">One home for standings: points, goal difference, and finished scores.</div>',
         unsafe_allow_html=True,
     )
 
     group_options = [g["id"] for g in groups]
-    default_groups = group_options[:4]
     selected_groups = st.sidebar.multiselect(
         "Groups to show",
         group_options,
-        default=default_groups,
+        default=group_options[:4],
     )
-
     show_matches = st.sidebar.checkbox("Show finished match scores", value=True)
 
     for gid in selected_groups:
@@ -108,35 +107,45 @@ def _render_group_flow_sidebar(data):
         st.sidebar.markdown(html, unsafe_allow_html=True)
 
     st.sidebar.markdown("---")
-    st.sidebar.caption("Use the sync script to refresh completed scores from a free API. The app itself reads local JSON only.")
+    st.sidebar.caption("Hourly GitHub Action refreshes local JSON. Streamlit does not call the API directly.")
 
 
-def render_hero():
-    # Keep this compact and unindented so Streamlit never renders it as code.
+def render_header(data):
+    completed = [m for m in data["matches"] if m["status"] == "completed"]
+    goals = sum((m["homeScore"] or 0) + (m["awayScore"] or 0) for m in completed)
     html = (
-        '<section class="wcdl-hero">'
-        '<div class="wcdl-hero-content">'
-        '<div class="wcdl-portfolio-kicker">Sid\'s AI Portfolio</div>'
-        '<div class="wcdl-brand">World Cup<span>Drama Lab</span></div>'
-        '<div class="wcdl-tagline">The simple way to follow the tournament.</div>'
-        '<div class="wcdl-kicker">Today\'s tournament mood</div>'
-        '<div class="wcdl-title">The drama is building.</div>'
-        '<div class="wcdl-subtitle">'
-        'Follow what happened, understand why it matters, and simulate what could happen next. '
-        'Built with local public-style match data, generated stories, and no copyrighted visuals.'
+        '<div class="wcdl-compact-header">'
+        '<div>'
+        '<div class="wcdl-portfolio-kicker">Sid&apos;s AI Portfolio</div>'
+        '<div class="wcdl-compact-title">World Cup Drama Lab</div>'
+        '<div class="wcdl-compact-subtitle">Match recaps, beginner-friendly context, and group-stage survival scenarios.</div>'
         '</div>'
+        f'<div class="wcdl-compact-meta"><strong>{len(completed)}</strong> matches played · <strong>{goals}</strong> goals · local JSON data</div>'
         '</div>'
-        '</section>'
     )
     _safe_html(html)
 
 
-from views import what_happened_view, why_it_matters_view, what_could_happen_view
+def render_pulse_strip(data):
+    pulse = build_tournament_pulse(data)
+    completed = [m for m in data["matches"] if m["status"] == "completed"]
+
+    # Keep this as a small app-level snapshot, not a repeated feature surface.
+    html = (
+        '<div class="wcdl-pulse-strip">'
+        f'<div><span>Matches played</span><strong>{len(completed)}</strong></div>'
+        f'<div><span>Worth your time</span><strong>{escape_html(pulse["matchToWatchNext"]["title"])}</strong></div>'
+        f'<div><span>Data refresh</span><strong>Hourly via GitHub Actions</strong></div>'
+        '</div>'
+    )
+    _safe_html(html)
+
 
 data = load_all()
 _render_group_flow_sidebar(data)
 
-render_hero()
+render_header(data)
+render_pulse_strip(data)
 
 tab1, tab2, tab3 = st.tabs(["What Happened", "Explain Soccer", "What Could Happen"])
 
@@ -151,17 +160,12 @@ with tab3:
 
 st.write("")
 st.markdown(
-    card_html(
-        label="Data and method notes",
-        title="Free-data, copyright-safe MVP",
-        body=(
-            "No player photos, official team crests, official FIFA artwork, or external visual assets are used. "
-            "The app reads from local JSON and can be refreshed with the included sync script. "
-            "This is not a betting model, official FIFA analysis, or live event-level analytics."
-        ),
-        accent="#0F172A",
-    ),
+    """
+    <div class="wcdl-note-compact">
+      <strong>Data note</strong>
+      Free-data, copyright-safe MVP. No player photos, official crests, FIFA artwork, paid data, betting odds,
+      or live event-level analytics. Data is read from local JSON and refreshed by the hourly sync workflow.
+    </div>
+    """,
     unsafe_allow_html=True,
 )
-
-st.caption("Local-data MVP. No official branding, photos, paid data, betting odds, or event-level analytics claims.")

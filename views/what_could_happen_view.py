@@ -91,7 +91,6 @@ def render(data):
     teams = data["team_by_id"]
     groups = data["groups"]
 
-
     st.markdown(
         card_html(
             label="Survival simulator",
