@@ -547,9 +547,9 @@
     "group": "K",
     "homeTeam": "por",
     "awayTeam": "uzb",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
+    "homeScore": 3,
+    "awayScore": 0,
+    "status": "live",
     "date": "2026-06-23",
     "events": [],
     "source": "football-data.org-sync"
