@@ -562,7 +562,7 @@
     "awayTeam": "gha",
     "homeScore": 0,
     "awayScore": 0,
-    "status": "live",
+    "status": "completed",
     "date": "2026-06-23",
     "events": [],
     "source": "football-data.org-sync"
