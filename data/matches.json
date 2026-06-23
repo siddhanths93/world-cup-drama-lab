@@ -535,8 +535,8 @@
     "homeTeam": "jor",
     "awayTeam": "alg",
     "homeScore": 1,
-    "awayScore": 0,
-    "status": "live",
+    "awayScore": 2,
+    "status": "completed",
     "date": "2026-06-23",
     "events": [],
     "source": "football-data.org-sync"
