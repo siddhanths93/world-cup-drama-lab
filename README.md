@@ -1,57 +1,33 @@
-# World Cup Drama Lab
+# World Cup Drama Lab — Phase 1 Polished Final
 
-Cleaned portfolio MVP.
+Phase 1 cleanup version focused on the match-led flow:
 
-## What changed in this cleanup release
+**Team/group search → group match board → selected story → Why It Matters → Scenario Lab**
 
-- Fixed project hygiene: ignores `.venv/`, `.venv1/`, `.idea/workspace.xml`, caches, and local secret files.
-- Fixed sync identity logic so football-data.org date shifts do not create duplicate matches.
-- Added dedupe protection before saving synced match data.
-- Simplified the app structure:
-  - Compact header instead of large hero.
-  - One small app-level pulse strip.
-  - **What Happened** now focuses on Recap Board + Detailed Recap.
-  - **Explain Soccer** owns Group Chaos.
-  - **What Could Happen** owns Survival Card + Simulator.
-  - Standings live in the sidebar only.
+## What changed
+
+- Expanded the app canvas for a wider dashboard layout.
+- Removed the left sidebar / Quick Desk entirely.
+- Added a compact Tournament Snapshot card in the header.
+- Removed top KPI boxes like Matches Played / Worth Your Time / Flow.
+- Replaced Streamlit tabs with app navigation buttons so CTA buttons can move the user between views.
+- Match board now shows one selected group only.
+- Group composition is informational only.
+- Match cards are light editorial cards, not black buttons.
+- Match cards use two lines: score/fixture + story sentence.
+- Removed Result/Upcoming prefixes.
+- Removed bottom Tournament Snapshot expander.
+- Made the current group table always visible under the selected story.
+- Fixed status labels to a trimmed set: Safe, In Control, Bubble Watch, Needs Help, Eliminated.
+- Renamed scenario language from Current Status/Projected Fate to Current Position/Scenario Outcome.
+- Fixed the Tell Your Friend card to show the actual one-sentence summary.
 
 ## Run locally
 
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-If needed on Windows:
-
 ```cmd
-.venv\Scripts\python.exe -m streamlit run app.py
+py -m streamlit run app.py
 ```
 
-## Sync data locally
+## Notes
 
-```cmd
-set FOOTBALL_DATA_API_KEY=your_token_here
-.venv\Scripts\python.exe scripts\sync_football_data.py --force
-```
-
-## Automated refresh
-
-GitHub Actions runs `.github/workflows/sync-worldcup-data.yml` hourly. It uses the GitHub repository secret:
-
-```text
-FOOTBALL_DATA_API_KEY
-```
-
-The deployed Streamlit app does not call football-data.org directly. It reads local JSON committed by the workflow.
-
-
-## If standings show duplicate matches
-
-Run:
-
-```cmd
-python scripts\dedupe_local_matches.py
-```
-
-Then commit `data/matches.json` and push.
+No player photos, official crests, FIFA artwork, betting odds, paid data, xG, or event-level claims.

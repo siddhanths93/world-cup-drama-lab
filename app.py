@@ -1,8 +1,7 @@
-
 """
 app.py - World Cup Drama Lab
 
-Cleaned Matchday Magazine version.
+Phase 1 clean editorial version.
 
 Design rules:
 - no official FIFA logos or team crests
@@ -15,154 +14,136 @@ Design rules:
 import streamlit as st
 
 from lib.data_loader import load_all
-from lib.calculate_standings import calculate_standings
-from lib.tournament_pulse import build_tournament_pulse
-from lib.ui_helpers import inject_global_css, escape_html, card_html
+from lib.ui_helpers import inject_global_css, escape_html
+from lib.state_helpers import ensure_selection_state, selected_match, set_selected_match
 from views import what_happened_view, why_it_matters_view, what_could_happen_view
 
 
 st.set_page_config(
     page_title="World Cup Drama Lab",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 st.markdown(inject_global_css(), unsafe_allow_html=True)
 
 
 def _safe_html(html: str):
-    if hasattr(st, "html"):
-        st.html(html)
-    else:
-        st.markdown(html, unsafe_allow_html=True)
+    # Use markdown rather than st.html to avoid stray component labels/rendering artifacts.
+    st.markdown(html, unsafe_allow_html=True)
 
 
-def _team_code(name):
-    clean = "".join([c for c in name if c.isalpha()])
-    return clean[:3].upper()
+def _sync_query_params(data):
+    """Allow match cards to be real clickable links without Streamlit button styling."""
+    try:
+        params = st.query_params
+        match_id = params.get("match_id")
+        if isinstance(match_id, list):
+            match_id = match_id[0] if match_id else None
+        if match_id:
+            valid = any(m["id"] == match_id for m in data.get("matches", []))
+            if valid and st.session_state.get("selected_match_id") != match_id:
+                set_selected_match(data, match_id)
+            try:
+                st.query_params.clear()
+            except Exception:
+                pass
+    except Exception:
+        return
 
 
-def _render_group_flow_sidebar(data):
+def _headline_for_match(data):
     teams = data["team_by_id"]
-    groups = data["groups"]
-    matches_by_group = data["matches_by_group"]
+    match = selected_match(data)
+    if not match:
+        return "Every result changes the group-stage story.", "Select a team or group. Every section follows the same story."
 
-    st.sidebar.markdown('<div class="wcdl-side-title">Group Flow</div>', unsafe_allow_html=True)
-    st.sidebar.markdown(
-        '<div class="wcdl-side-note">One home for standings: points, goal difference, and finished scores.</div>',
-        unsafe_allow_html=True,
-    )
+    home = teams[match["homeTeam"]]["name"]
+    away = teams[match["awayTeam"]]["name"]
+    if match["status"] == "completed":
+        hs, as_ = match["homeScore"], match["awayScore"]
+        if hs == as_:
+            title = f"{home} and {away} left Group {match['group']} unresolved."
+        else:
+            winner = home if hs > as_ else away
+            loser = away if hs > as_ else home
+            margin = abs(hs - as_)
+            if margin >= 3:
+                title = f"{winner} made a statement. {loser} is under pressure."
+            elif margin == 1:
+                title = f"{winner} survived a narrow one. Group {match['group']} stays tense."
+            else:
+                title = f"{winner} took control of the Group {match['group']} story."
+        return title, "Select a team or group. Every section follows the same story."
 
-    group_options = [g["id"] for g in groups]
-    selected_groups = st.sidebar.multiselect(
-        "Groups to show",
-        group_options,
-        default=group_options[:4],
-    )
-    show_matches = st.sidebar.checkbox("Show finished match scores", value=True)
-
-    for gid in selected_groups:
-        group = data["group_by_id"][gid]
-        group_matches = matches_by_group.get(gid, [])
-        standings = calculate_standings(group["teamIds"], group_matches)
-        completed = [m for m in group_matches if m["status"] == "completed"]
-
-        html = (
-            f'<div class="wcdl-side-group">'
-            f'<div class="wcdl-side-group-head">'
-            f'<h4>Group {gid}</h4>'
-            f'<span class="wcdl-side-group-chip">{len(completed)} finished</span>'
-            f'</div>'
-        )
-        html += '<table class="wcdl-side-table"><thead><tr><th>#</th><th>Team</th><th>MP</th><th>GD</th><th>Pts</th></tr></thead><tbody>'
-
-        max_pts = max([r["points"] for r in standings] + [1])
-        for row in standings:
-            name = teams[row["teamId"]]["name"]
-            pct = int((row["points"] / max_pts) * 100) if max_pts else 0
-            html += (
-                f'<tr>'
-                f'<td><span class="wcdl-rank-pill">{row["rank"]}</span></td>'
-                f'<td><span class="wcdl-team-code">{_team_code(name)}</span>{escape_html(name)}'
-                f'<div class="wcdl-pts-bar"><div class="wcdl-pts-fill" style="width:{pct}%;"></div></div></td>'
-                f'<td>{row["played"]}</td>'
-                f'<td>{row["goalDifference"]:+d}</td>'
-                f'<td><strong>{row["points"]}</strong></td>'
-                f'</tr>'
-            )
-        html += '</tbody></table>'
-
-        if show_matches and completed:
-            html += '<div class="wcdl-side-match-title">Finished matches</div>'
-            for m in completed:
-                home = teams[m["homeTeam"]]["name"]
-                away = teams[m["awayTeam"]]["name"]
-                html += (
-                    f'<div class="wcdl-side-match">'
-                    f'<span>{escape_html(home)} vs {escape_html(away)}</span>'
-                    f'<span class="wcdl-side-score">{m["homeScore"]}-{m["awayScore"]}</span>'
-                    f'</div>'
-                )
-        html += '</div>'
-        st.sidebar.markdown(html, unsafe_allow_html=True)
-
-    st.sidebar.markdown("---")
-    st.sidebar.caption("Hourly GitHub Action refreshes local JSON. Streamlit does not call the API directly.")
+    return f"{home} vs {away} is next on the Group {match['group']} board.", "Select a team or group. Every section follows the same story."
 
 
 def render_header(data):
+    title, subtitle = _headline_for_match(data)
     completed = [m for m in data["matches"] if m["status"] == "completed"]
-    goals = sum((m["homeScore"] or 0) + (m["awayScore"] or 0) for m in completed)
+    live = [m for m in data["matches"] if m["status"] == "live"]
+    scheduled = [m for m in data["matches"] if m["status"] == "scheduled"]
+    goals = sum((m.get("homeScore") or 0) + (m.get("awayScore") or 0) for m in completed)
     html = (
-        '<div class="wcdl-compact-header">'
+        '<div class="wcdl-header">'
         '<div>'
-        '<div class="wcdl-portfolio-kicker">Sid&apos;s AI Portfolio</div>'
-        '<div class="wcdl-compact-title">World Cup Drama Lab</div>'
-        '<div class="wcdl-compact-subtitle">Match recaps, beginner-friendly context, and group-stage survival scenarios.</div>'
+        "<div class=\"wcdl-header-kicker\">Sid's Portfolio - World Cup Drama Lab</div>"
+        f'<div class="wcdl-header-title">{escape_html(title)}</div>'
+        f'<div class="wcdl-header-subtitle">{escape_html(subtitle)}</div>'
         '</div>'
-        f'<div class="wcdl-compact-meta"><strong>{len(completed)}</strong> matches played · <strong>{goals}</strong> goals · local JSON data</div>'
+        '<div class="wcdl-snapshot">'
+        '<div class="wcdl-snapshot-title">Tournament snapshot</div>'
+        f'<div class="wcdl-snapshot-row"><span>Completed</span><strong>{len(completed)}</strong></div>'
+        f'<div class="wcdl-snapshot-row"><span>Live</span><strong>{len(live)}</strong></div>'
+        f'<div class="wcdl-snapshot-row"><span>Goals</span><strong>{goals}</strong></div>'
+        f'<div class="wcdl-snapshot-row"><span>Upcoming</span><strong>{len(scheduled)}</strong></div>'
+        '<div class="wcdl-snapshot-row"><span>Source</span><strong>Local JSON</strong></div>'
         '</div>'
-    )
-    _safe_html(html)
-
-
-def render_pulse_strip(data):
-    pulse = build_tournament_pulse(data)
-    completed = [m for m in data["matches"] if m["status"] == "completed"]
-
-    # Keep this as a small app-level snapshot, not a repeated feature surface.
-    html = (
-        '<div class="wcdl-pulse-strip">'
-        f'<div><span>Matches played</span><strong>{len(completed)}</strong></div>'
-        f'<div><span>Worth your time</span><strong>{escape_html(pulse["matchToWatchNext"]["title"])}</strong></div>'
-        f'<div><span>Data refresh</span><strong>Hourly via GitHub Actions</strong></div>'
         '</div>'
     )
     _safe_html(html)
+
+
+def _nav_button(label, view_key, key):
+    active = st.session_state.get("active_view", "match") == view_key
+    button_label = f"{'✓ ' if active else ''}{label}"
+    if st.button(button_label, key=key, use_container_width=True):
+        st.session_state["active_view"] = view_key
+        st.rerun()
+
+
+def render_navigation():
+    st.session_state.setdefault("active_view", "match")
+    c1, c2, c3, spacer = st.columns([1, 1.15, 1, 5])
+    with c1:
+        _nav_button("Match Desk", "match", "nav_match")
+    with c2:
+        _nav_button("Why It Matters", "why", "nav_why")
+    with c3:
+        _nav_button("Scenario Lab", "scenario", "nav_scenario")
+    st.markdown('<div class="wcdl-nav-spacer"></div>', unsafe_allow_html=True)
 
 
 data = load_all()
-_render_group_flow_sidebar(data)
+ensure_selection_state(data)
+_sync_query_params(data)
 
 render_header(data)
-render_pulse_strip(data)
+render_navigation()
 
-tab1, tab2, tab3 = st.tabs(["What Happened", "Explain Soccer", "What Could Happen"])
-
-with tab1:
-    what_happened_view.render(data)
-
-with tab2:
+active_view = st.session_state.get("active_view", "match")
+if active_view == "why":
     why_it_matters_view.render(data)
-
-with tab3:
+elif active_view == "scenario":
     what_could_happen_view.render(data)
+else:
+    what_happened_view.render(data)
 
 st.write("")
 st.markdown(
     """
-    <div class="wcdl-note-compact">
-      <strong>Data note</strong>
+    <div class="wcdl-data-note">
       Free-data, copyright-safe MVP. No player photos, official crests, FIFA artwork, paid data, betting odds,
       or live event-level analytics. Data is read from local JSON and refreshed by the hourly sync workflow.
     </div>

@@ -88,34 +88,66 @@ def _projected_table_html(rows, teams):
 
 
 def render(data):
+    from lib.state_helpers import ensure_selection_state
+    ensure_selection_state(data)
     teams = data["team_by_id"]
     groups = data["groups"]
 
     st.markdown(
         card_html(
-            label="Survival simulator",
-            title="Can your team survive the group?",
-            body="Pick a team, change remaining scores, and see how the qualification story changes.",
+            label="Scenario Lab",
+            title="What happens next for the selected group?",
+            body="This view inherits the group and team selected in Match Desk. Change remaining scores and see how the qualification story changes.",
             accent="#1D4ED8",
             large=True,
         ),
         unsafe_allow_html=True,
     )
 
+    group_ids = [g["id"] for g in groups]
+    default_group = st.session_state.get("selected_group", group_ids[0])
+    if default_group not in group_ids:
+        default_group = group_ids[0]
+
+    if st.session_state.get("_scenario_synced_group") != default_group:
+        st.session_state["wch_group"] = default_group
+        st.session_state["_scenario_synced_group"] = default_group
+
     c_group, c_team = st.columns([1, 2])
     with c_group:
-        group_id = st.selectbox("Group", [g["id"] for g in groups], format_func=lambda g: f"Group {g}", key="wch_group")
+        group_id = st.selectbox(
+            "Group",
+            group_ids,
+            index=group_ids.index(default_group),
+            format_func=lambda g: f"Group {g}",
+            key="wch_group",
+        )
+    if group_id != st.session_state.get("selected_group"):
+        st.session_state["selected_group"] = group_id
+
     group_team_ids = data["group_by_id"][group_id]["teamIds"]
     group_matches = data["matches_by_group"].get(group_id, [])
     scheduled = [m for m in group_matches if m["status"] == "scheduled"]
+
+    default_team = st.session_state.get("selected_team")
+    if default_team not in group_team_ids:
+        default_team = group_team_ids[0]
+        st.session_state["selected_team"] = default_team
+
+    if st.session_state.get("_scenario_synced_team") != default_team:
+        st.session_state["wch_focus"] = default_team
+        st.session_state["_scenario_synced_team"] = default_team
 
     with c_team:
         focus_team = st.selectbox(
             "Pick your team",
             group_team_ids,
+            index=group_team_ids.index(default_team),
             format_func=lambda tid: teams[tid]["name"],
             key="wch_focus",
         )
+    if focus_team != st.session_state.get("selected_team"):
+        st.session_state["selected_team"] = focus_team
 
     current_card = build_survival_card(focus_team, data)
 
@@ -123,7 +155,7 @@ def render(data):
     with left:
         st.markdown(
             card_html(
-                label="Current status",
+                label="Current position",
                 title=f"{current_card['teamName']} — {current_card['status']}",
                 body=_survival_body(current_card),
                 badge=current_card["status"],
@@ -144,8 +176,8 @@ def render(data):
         st.markdown(
             card_html(
                 label="Quick scenarios",
-                title="Try a path",
-                body="Use these buttons to populate scores, then adjust any match manually.",
+                title="Try a scenario",
+                body="Current position uses the real table. Scenario outcome uses the scores you enter below.",
                 accent="#D6A84F",
             ),
             unsafe_allow_html=True,
@@ -170,7 +202,7 @@ def render(data):
         """
         <div class="wcdl-section-title">
           <h3>Remaining matches</h3>
-          <div class="wcdl-section-note">Change the scores. The projected fate updates below.</div>
+          <div class="wcdl-section-note">Change the scores. The scenario outcome updates below.</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -223,7 +255,7 @@ def render(data):
     st.markdown(
         """
         <div class="wcdl-section-title">
-          <h3>Projected fate</h3>
+          <h3>Scenario outcome</h3>
           <div class="wcdl-section-note">Plain English first. Table second.</div>
         </div>
         """,
@@ -267,7 +299,7 @@ def render(data):
                 body=third_place_row["qualification"]["note"],
                 footer=(
                     "This MVP does not fully rank all 12 third-place teams against each other. "
-                    "Treat Calculator Mode as an uncertainty label, not a final answer."
+                    "Treat Bubble Watch as an uncertainty label, not a final answer."
                 ),
                 accent="#B45309",
             ),

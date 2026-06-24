@@ -7,18 +7,16 @@ Plain-English explanations for group and team context.
 STATUS_PHRASES_BEGINNER = {
     "Safe": "is through to the next round in this scenario",
     "In Control": "is in a strong spot, but still has work left",
-    "Danger Zone": "is in the qualifying picture, but one bad result can change things",
-    "Calculator Mode": "needs its own result and help from other scorelines",
-    "Needs a Miracle": "is in real trouble and needs a lot to go right",
+    "Bubble Watch": "is alive but vulnerable",
+    "Needs Help": "needs its own result and help from other scorelines",
     "Eliminated": "is out of the running",
 }
 
 STATUS_PHRASES_SPORTS_FAN = {
     "Safe": "has effectively clinched a playoff spot in this setup",
     "In Control": "controls its own destiny",
-    "Danger Zone": "is on the bubble but still alive",
-    "Calculator Mode": "is scoreboard watching like a wild-card team",
-    "Needs a Miracle": "needs win-out-and-get-help energy",
+    "Bubble Watch": "is on the bubble but still alive",
+    "Needs Help": "is scoreboard watching like a wild-card team",
     "Eliminated": "has been knocked out of the race",
 }
 
@@ -49,12 +47,12 @@ def explain_group(group_id, rows, team_by_id, style="complete_beginner"):
         why_lines.append(f"{name} {phrases[label]}.")
         if label == "Safe":
             want_lines.append(f"{name} wants to manage risk and stay sharp.")
-        elif label in ("In Control", "Danger Zone"):
+        elif label == "In Control":
             want_lines.append(f"{name} wants a clean result that removes the math.")
-        elif label == "Calculator Mode":
-            want_lines.append(f"{name} wants a win and friendly results elsewhere.")
-        elif label == "Needs a Miracle":
-            want_lines.append(f"{name} needs a win and a lot of help.")
+        elif label == "Bubble Watch":
+            want_lines.append(f"{name} wants a result that keeps them above the line.")
+        elif label == "Needs Help":
+            want_lines.append(f"{name} needs a win and friendly results elsewhere.")
         else:
             want_lines.append(f"{name} is mostly playing for pride or spoiler value.")
 
@@ -64,7 +62,7 @@ def explain_group(group_id, rows, team_by_id, style="complete_beginner"):
         watch_for = "Watch the gap between 2nd and 3rd. That tells you who is safe, who is sweating, and who needs help."
 
     translation = _group_translation(rows, team_by_id, style)
-    tell_friend = f"Group {group_id}, one sentence version: {translation}"
+    tell_friend = f"Group {group_id} is not settled: {translation}"
 
     return {
         "whyThisMatters": " ".join(why_lines),
@@ -85,9 +83,8 @@ def explain_team(team_id, row, team_by_id, style="complete_beginner"):
     wants = {
         "Safe": "to keep momentum and avoid unnecessary damage.",
         "In Control": "one more clean result to avoid late group-stage drama.",
-        "Danger Zone": "a result that prevents calculator mode.",
-        "Calculator Mode": "a win, plus help from another scoreline.",
-        "Needs a Miracle": "a win, probably a big one, plus outside help.",
+        "Bubble Watch": "a result that keeps them above the line.",
+        "Needs Help": "a win, plus help from another scoreline.",
         "Eliminated": "pride and spoiler value.",
     }[label]
 
@@ -97,7 +94,7 @@ def explain_team(team_id, row, team_by_id, style="complete_beginner"):
         watch_for = f"Keep an eye on goal difference ({row['goalDifference']:+d}). It can decide who survives when points are tied."
 
     translation = f"{team['name']}: {note}"
-    tell_friend = f"{team['name']} in one line: {translation}"
+    tell_friend = f"{team['name']} story: {translation}"
 
     return {
         "whyThisMatters": why,

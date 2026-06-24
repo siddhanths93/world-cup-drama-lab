@@ -67,9 +67,8 @@ def _mood(label):
     return {
         "Safe": "calm",
         "In Control": "comfortable but not done",
-        "Danger Zone": "sweating",
-        "Calculator Mode": "scoreboard watching",
-        "Needs a Miracle": "nearly out of road",
+        "Bubble Watch": "sweating",
+        "Needs Help": "scoreboard watching",
         "Eliminated": "playing for pride",
     }.get(label, "unclear")
 
@@ -77,9 +76,9 @@ def _mood(label):
 def _controls_fate(label, rank, remaining):
     if label in ("Safe", "In Control"):
         return "Mostly yes"
-    if label == "Danger Zone":
+    if label == "Bubble Watch":
         return "Partially"
-    if label == "Calculator Mode":
+    if label == "Needs Help":
         return "Not fully"
     if remaining == 0:
         return "No"
@@ -93,10 +92,10 @@ def _best_path(label, opponent):
         return f"Beat {opponent} and keep goal difference healthy."
     if label == "In Control":
         return "Avoid a bad final result and protect the current table position."
-    if label == "Calculator Mode":
+    if label == "Bubble Watch":
+        return "Win or draw well enough to stay above the line."
+    if label == "Needs Help":
         return "Win, then hope the teams around them drop points or lose goal difference."
-    if label == "Needs a Miracle":
-        return "Win big and hope the rest of the group breaks perfectly."
     return "The group path is no longer available."
 
 
@@ -105,12 +104,10 @@ def _danger_path(label, opponent):
         return "The main danger is losing rhythm before the knockout rounds."
     if label == "In Control":
         return "A loss can turn comfort into calculator mode quickly."
-    if label == "Danger Zone":
+    if label == "Bubble Watch":
         return "A draw may not be enough if the closest rival wins."
-    if label == "Calculator Mode":
-        return "Even a decent result might not be enough if other groups break badly."
-    if label == "Needs a Miracle":
-        return "Anything short of a win probably ends the realistic path."
+    if label == "Needs Help":
+        return "Even a decent result might not be enough if other results break badly."
     return "Only spoiler role remains."
 
 
@@ -119,10 +116,8 @@ def _fan_translation(label, team_name, opponent):
         return f"{team_name} can breathe. The math is no longer the problem."
     if label == "In Control":
         return f"{team_name} is in a good place. Do the job and avoid drama."
-    if label == "Danger Zone":
+    if label == "Bubble Watch":
         return f"{team_name} is alive, but one bad result can turn this into a spreadsheet exercise."
-    if label == "Calculator Mode":
+    if label == "Needs Help":
         return f"{team_name} needs their own result and help from elsewhere. This is scoreboard-watching territory."
-    if label == "Needs a Miracle":
-        return f"{team_name} needs a win and several favors. Possible on paper, rough in reality."
     return f"{team_name} is out of the group race."

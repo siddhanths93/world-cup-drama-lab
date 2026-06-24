@@ -1,369 +1,343 @@
-
 """
-What Happened view
+Match Desk view
 
-Completed-match recaps with:
-- tournament pulse
-- top stories
-- clickable recap board
-- detailed recap
+Phase 1 clean editorial flow:
+- user can search/select a team or select a group
+- selected group shows composition chips only as information
+- board shows only that group's games
+- latest results first, upcoming games second
+- clicking a match drives recap/context/scenario state through query params
 """
 import streamlit as st
 
+from lib.calculate_standings import calculate_standings
 from lib.match_story import generate_match_story
-from lib.tournament_pulse import build_tournament_pulse
-from lib.group_chaos import rank_group_chaos
+from lib.state_helpers import (
+    ensure_selection_state,
+    latest_match_for_group,
+    set_selected_group,
+    set_selected_team,
+    set_selected_match,
+    selected_match,
+)
 from lib.ui_helpers import (
     card_html,
-    stat_card_html,
-    progress_html,
     badge_html,
     escape_html,
-    DRAMA_COLORS,
-    ENTERTAINMENT_COLORS,
-    VERDICT_COLORS,
     MATCH_TYPE_COLORS,
-    PULSE_COLORS,
+    QUALIFICATION_COLORS,
 )
+from lib.qualification_status import calculate_qualification_status
 
 
-def _label_for(m, teams):
-    h, a = teams[m["homeTeam"]]["name"], teams[m["awayTeam"]]["name"]
-    return f"Group {m['group']} · {m['date']} · {h} {m['homeScore']}-{m['awayScore']} {a}"
+def _format_match_line(match, teams):
+    home = teams[match["homeTeam"]]["name"]
+    away = teams[match["awayTeam"]]["name"]
+    if match["status"] == "completed":
+        return f"{home} {match['homeScore']}–{match['awayScore']} {away}"
+    if match["status"] == "live":
+        return f"{home} {match.get('homeScore') or 0}–{match.get('awayScore') or 0} {away}"
+    return f"{home} vs {away}"
 
 
-def _rank_stories(stories, sort_mode):
-    def key(item):
-        match, story = item
-        if sort_mode == "Most entertaining":
-            return story["entertainmentMeter"]["score"]
-        if sort_mode == "Most dramatic":
-            return story["dramaMeter"]["score"]
-        if sort_mode == "Most misleading scoreline":
-            return abs(story["scorelineVerdict"]["actualMargin"] - story["scorelineVerdict"]["expectedMargin"])
-        if sort_mode == "Biggest margin":
-            return abs(match["homeScore"] - match["awayScore"])
-        return match["date"]
-
-    return sorted(stories, key=key, reverse=True)
+def _match_sort_key(match):
+    return (match.get("date", ""), match.get("id", ""))
 
 
-def _render_tournament_pulse(data):
-    pulse = build_tournament_pulse(data)
+def _group_match_sections(group_matches):
+    live = sorted([m for m in group_matches if m["status"] == "live"], key=_match_sort_key, reverse=True)
+    completed = sorted([m for m in group_matches if m["status"] == "completed"], key=_match_sort_key, reverse=True)
+    scheduled = sorted([m for m in group_matches if m["status"] == "scheduled"], key=_match_sort_key)
+    return live, completed, scheduled
+
+
+def _standings_with_status(data, group_id):
+    teams = data["team_by_id"]
+    group = data["group_by_id"][group_id]
+    group_matches = data["matches_by_group"].get(group_id, [])
+    rows = calculate_standings(group["teamIds"], group_matches)
+
+    remaining = {tid: 0 for tid in group["teamIds"]}
+    for m in group_matches:
+        if m["status"] == "scheduled":
+            remaining[m["homeTeam"]] += 1
+            remaining[m["awayTeam"]] += 1
+
+    html = '<table class="wcdl-small-table"><thead><tr><th>#</th><th>Team</th><th>P</th><th>GD</th><th>Pts</th><th>Status</th></tr></thead><tbody>'
+    for row in rows:
+        q = calculate_qualification_status(row, rows, remaining[row["teamId"]])
+        html += (
+            f'<tr>'
+            f'<td>{row["rank"]}</td>'
+            f'<td>{escape_html(teams[row["teamId"]]["name"])}</td>'
+            f'<td>{row["played"]}</td>'
+            f'<td>{row["goalDifference"]:+d}</td>'
+            f'<td><strong>{row["points"]}</strong></td>'
+            f'<td>{badge_html(q["label"], QUALIFICATION_COLORS)}</td>'
+            f'</tr>'
+        )
+    html += '</tbody></table>'
+    return html
+
+
+def _group_chips_html(data, group_id):
+    teams = data["team_by_id"]
+    group_team_ids = data["group_by_id"][group_id]["teamIds"]
+    chips = [f'<span class="wcdl-team-chip">{escape_html(teams[tid]["name"])}</span>' for tid in group_team_ids]
+    return ''.join(chips)
+
+
+def _sync_team_selector(data):
+    set_selected_team(data, st.session_state["wcdl_team_selector"])
+
+
+def _sync_group_selector(data):
+    set_selected_group(data, st.session_state["wcdl_group_selector"])
+
+
+def _render_team_group_controls(data):
+    ensure_selection_state(data)
+    teams = data["team_by_id"]
+    groups = data["groups"]
+    group_ids = [g["id"] for g in groups]
+    all_team_ids = [t["id"] for t in sorted(data["teams"], key=lambda x: x["name"])]
+
+    selected_group = st.session_state["selected_group"]
+    selected_team = st.session_state["selected_team"]
+
+    st.session_state.setdefault("wcdl_team_selector", selected_team)
+    st.session_state.setdefault("wcdl_group_selector", selected_group)
+    if st.session_state["wcdl_team_selector"] != selected_team:
+        st.session_state["wcdl_team_selector"] = selected_team
+    if st.session_state["wcdl_group_selector"] != selected_group:
+        st.session_state["wcdl_group_selector"] = selected_group
 
     st.markdown(
         """
-        <div class="wcdl-section-title">
-          <h3>Tournament pulse</h3>
-          <div class="wcdl-section-note">The quick read before you open a match.</div>
+        <div class="wcdl-finder-header">
+          <h3>Find your team or group</h3>
+          <p>Search by team if you do not know the group. The board will auto-focus on that group.</p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 0.85])
-    with col1:
-        title = pulse["mostChaoticGroup"]["title"].split(" — ")[0]
-        st.markdown(
-            stat_card_html(
-                "Most chaotic group",
-                title,
-                pulse["mostChaoticGroup"]["subtitle"],
-                accent="#BE123C",
-                badge="Group Chaos",
-                badge_color_map=PULSE_COLORS,
-            ),
-            unsafe_allow_html=True,
+    c_team, c_group = st.columns([1.4, 0.8])
+    with c_team:
+        st.selectbox(
+            "Team search",
+            all_team_ids,
+            format_func=lambda tid: teams[tid]["name"],
+            key="wcdl_team_selector",
+            on_change=_sync_team_selector,
+            args=(data,),
         )
-    with col2:
-        title = pulse["teamUnderPressure"]["title"].split(" — ")[0]
-        status = pulse["teamUnderPressure"]["title"].split(" — ")[-1]
-        st.markdown(
-            stat_card_html(
-                "Team under pressure",
-                title,
-                status,
-                accent="#B45309",
-                badge=status,
-                badge_color_map={status: "#B45309"},
-            ),
-            unsafe_allow_html=True,
-        )
-    with col3:
-        st.markdown(
-            stat_card_html(
-                "What to watch next",
-                pulse["matchToWatchNext"]["title"],
-                pulse["matchToWatchNext"]["subtitle"],
-                accent="#1D4ED8",
-                badge="High Stakes",
-                badge_color_map={"High Stakes": "#1D4ED8"},
-            ),
-            unsafe_allow_html=True,
-        )
-    with col4:
-        completed = [m for m in data["matches"] if m["status"] == "completed"]
-        goals = sum((m["homeScore"] or 0) + (m["awayScore"] or 0) for m in completed)
-        avg = goals / len(completed) if completed else 0
-        st.markdown(
-            card_html(
-                label="Quick snapshot",
-                body=(
-                    f'<div style="display:grid;grid-template-columns:54px 1fr;row-gap:8px;align-items:center;">'
-                    f'<div style="font-size:1.55rem;font-weight:950;">48</div><div>Teams</div>'
-                    f'<div style="font-size:1.55rem;font-weight:950;">12</div><div>Groups</div>'
-                    f'<div style="font-size:1.55rem;font-weight:950;">{len(completed)}</div><div>Matches Played</div>'
-                    f'<div style="font-size:1.55rem;font-weight:950;">{goals}</div><div>Goals Scored<br><span style="color:#94A3B8;">({avg:.2f} per match)</span></div>'
-                    f'</div>'
-                ),
-                accent="#0F172A",
-                variant="dark",
-            ),
-            unsafe_allow_html=True,
+    with c_group:
+        st.selectbox(
+            "Group filter",
+            group_ids,
+            format_func=lambda gid: f"Group {gid}",
+            key="wcdl_group_selector",
+            on_change=_sync_group_selector,
+            args=(data,),
         )
 
 
-def _render_top_stories(data, stories):
-    chaos = rank_group_chaos(data)[0]
-    statement_match, statement_story = max(stories, key=lambda ms: ms[1]["entertainmentMeter"]["score"])
-    drama_match, drama_story = max(stories, key=lambda ms: ms[1]["dramaMeter"]["score"])
-
-    story_cards = [
-        (
-            "01",
-            f"{statement_story['homeTeam']} {statement_story['score']} {statement_story['awayTeam']} made a loud statement",
-            statement_story["oneLiner"],
-            f"{statement_story['entertainmentMeter']['score']}/100 entertainment",
-            "#BE123C",
-        ),
-        (
-            "02",
-            f"Group {chaos['group']} is where the math gets interesting",
-            "; ".join(chaos["reasons"][:2]),
-            f"{chaos['score']}/100 chaos",
-            "#D6A84F",
-        ),
-        (
-            "03",
-            f"{drama_story['homeTeam']} {drama_story['score']} {drama_story['awayTeam']} carried the strongest tension signal",
-            drama_story["oneLiner"],
-            f"{drama_story['dramaMeter']['score']}/100 drama",
-            "#1D4ED8",
-        ),
-    ]
-
+def _render_group_header(data, group_id):
+    chips = _group_chips_html(data, group_id)
     st.markdown(
-        """
-        <div class="wcdl-section-title">
-          <h3>Top stories so far</h3>
-          <div class="wcdl-section-note">Generated from scores, standings context, and team strength inputs.</div>
+        f"""
+        <div class="wcdl-group-context-panel">
+          <div class="wcdl-card-label">Group {escape_html(group_id)} composition</div>
+          <div class="wcdl-team-chip-row">{chips}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    cols = st.columns(3)
-    for col, (num, title, body, footer, accent) in zip(cols, story_cards):
-        with col:
-            st.markdown(
-                card_html(
-                    label=num,
-                    title=title,
-                    body=escape_html(body),
-                    footer=footer,
-                    accent=accent,
-                    large=True,
-                ),
-                unsafe_allow_html=True,
-            )
+
+def _scheduled_match_type(match, selected_team):
+    if selected_team in (match.get("homeTeam"), match.get("awayTeam")):
+        return "Survival Match"
+    return "Pressure Match"
 
 
-def _get_query_match_id():
-    """Read selected recap id from URL query params across Streamlit versions."""
-    try:
-        value = st.query_params.get("recap_match")
-    except Exception:
-        value = None
-
-    if isinstance(value, list):
-        return value[0] if value else None
-    return value
+def _scheduled_description(match, teams, selected_team):
+    home = teams[match["homeTeam"]]["name"]
+    away = teams[match["awayTeam"]]["name"]
+    if selected_team == match.get("homeTeam"):
+        return f"{home} needs a result and help elsewhere."
+    if selected_team == match.get("awayTeam"):
+        return f"{away} needs a result and help elsewhere."
+    return "Final matchday leverage."
 
 
-def _render_clickable_recap_board(stories):
+def _render_match_link(match, story, teams, selected_id, selected_team=None, data=None):
+    title = _format_match_line(match, teams)
+    selected = selected_id == match["id"]
+
+    if match["status"] == "completed" and story:
+        match_type = story["matchType"]
+        desc = story["oneLiner"]
+    elif match["status"] == "live":
+        match_type = "Live"
+        desc = "Live match. This story is still moving."
+    else:
+        match_type = _scheduled_match_type(match, selected_team)
+        desc = _scheduled_description(match, teams, selected_team)
+
+    badge = badge_html(match_type, MATCH_TYPE_COLORS)
+    active_class = " wcdl-match-card-active" if selected else ""
+    href = f"?match_id={escape_html(match['id'])}"
     st.markdown(
-        """
-        <div class="wcdl-section-title">
-          <h3>Match recap board</h3>
-          <div class="wcdl-section-note">Click a match card and the detailed recap below will update.</div>
-        </div>
-        """,
+        f'<a class="wcdl-match-link" href="{href}">'
+        f'<div class="wcdl-match-card{active_class}">'
+        f'<div class="wcdl-match-copy">'
+        f'<div class="wcdl-match-title">{escape_html(title)}</div>'
+        f'<div class="wcdl-match-desc">{escape_html(desc)}</div>'
+        f'</div>'
+        f'<div class="wcdl-match-type">{badge}</div>'
+        f'</div>'
+        f'</a>',
         unsafe_allow_html=True,
     )
 
-    sort_mode = st.selectbox(
-        "Sort completed matches by",
-        ["Most entertaining", "Most dramatic", "Most misleading scoreline", "Biggest margin", "Latest first"],
-    )
-    ranked = _rank_stories(stories, sort_mode)[:8]
-    ranked_ids = {match["id"] for match, _ in ranked}
 
-    selected_from_url = _get_query_match_id()
-    if selected_from_url in ranked_ids:
-        st.session_state["selected_match_id"] = selected_from_url
-
-    if "selected_match_id" not in st.session_state or st.session_state["selected_match_id"] not in ranked_ids:
-        st.session_state["selected_match_id"] = ranked[0][0]["id"]
-
-    cols = st.columns(4)
-    for i, (match, story) in enumerate(ranked):
-        with cols[i % 4]:
-            selected = st.session_state.get("selected_match_id") == match["id"]
-            selected_class = " wcdl-recap-card-selected" if selected else ""
-            card_url = f"?recap_match={match['id']}#detailed-recap"
-
-            st.markdown(
-                f"""
-                <a class="wcdl-recap-card-link" href="{card_url}" target="_self">
-                  <div class="wcdl-recap-card{selected_class}">
-                    <div class="wcdl-recap-card-meta">Group {match['group']} · {match['date']}</div>
-                    <div class="wcdl-recap-card-title">
-                      {escape_html(story['homeTeam'])} {escape_html(story['score'])} {escape_html(story['awayTeam'])}
-                    </div>
-                    <div style="margin-top:10px;">{badge_html(story['matchType'], MATCH_TYPE_COLORS)}</div>
-                    <div class="wcdl-recap-card-hint">Click to open recap</div>
-                  </div>
-                </a>
-                """,
-                unsafe_allow_html=True,
-            )
-
-def render(data):
+def _render_group_match_board(data, group_id):
     teams = data["team_by_id"]
     matches = data["matches"]
-    completed = [m for m in matches if m["status"] == "completed"]
-    completed.sort(key=lambda m: m["date"])
-    stories = [(m, generate_match_story(m, teams, matches)) for m in completed]
-
-    if not stories:
-        st.info("No completed matches are available in the local dataset yet.")
-        return
-
-    _render_clickable_recap_board(stories)
-
-    story_by_id = {m["id"]: (m, s) for m, s in stories}
     selected_id = st.session_state.get("selected_match_id")
-    if selected_id not in story_by_id:
-        selected_id = stories[0][0]["id"]
-        st.session_state["selected_match_id"] = selected_id
+    selected_team = st.session_state.get("selected_team")
+    group_matches = data["matches_by_group"].get(group_id, [])
+    live, completed, scheduled = _group_match_sections(group_matches)
 
-    match, story = story_by_id[selected_id]
+    if not selected_id or not any(m["id"] == selected_id for m in group_matches):
+        preferred = latest_match_for_group(data, group_id)
+        if preferred:
+            st.session_state["selected_match_id"] = preferred["id"]
+            selected_id = preferred["id"]
 
     st.markdown(
         """
-        <div id="detailed-recap"></div>
         <div class="wcdl-section-title">
-          <h3>Detailed recap</h3>
-          <div class="wcdl-section-note">The short version, verdict, mood, and what it means.</div>
+          <h3>Match board</h3>
+          <div class="wcdl-section-note">Only this group's games. Latest results first, upcoming fixtures below.</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+    if live:
+        st.markdown('<div class="wcdl-board-subhead">Live now</div>', unsafe_allow_html=True)
+        for m in live:
+            _render_match_link(m, None, teams, selected_id, selected_team, data)
+
+    st.markdown('<div class="wcdl-board-subhead">Latest results</div>', unsafe_allow_html=True)
+    if not completed:
+        st.info("No completed matches in this group yet.")
+    for m in completed:
+        story = generate_match_story(m, teams, matches)
+        _render_match_link(m, story, teams, selected_id, selected_team, data)
+
+    st.markdown('<div class="wcdl-board-subhead">Coming up</div>', unsafe_allow_html=True)
+    if not scheduled:
+        st.caption("No upcoming fixtures in this group in the current dataset.")
+    for m in scheduled:
+        _render_match_link(m, None, teams, selected_id, selected_team, data)
+
+
+def _render_selected_story(data):
+    teams = data["team_by_id"]
+    matches = data["matches"]
+    match = selected_match(data)
+    if not match:
+        st.info("Pick a match from the board to open the story.")
+        return
+
+    home = teams[match["homeTeam"]]["name"]
+    away = teams[match["awayTeam"]]["name"]
+
+    if match["status"] == "completed":
+        story = generate_match_story(match, teams, matches)
+        title = f"{story['homeTeam']} {story['score'].replace('-', '–')} {story['awayTeam']}"
+        body = (
+            f'<div style="font-size:1.12rem;color:#07122B;font-weight:900;margin-bottom:12px;line-height:1.35;">'
+            f'{escape_html(story["oneLiner"])}</div>'
+            f'<div>{escape_html(story["takeaway"])} This story now carries into Why It Matters and Scenario Lab.</div>'
+        )
+        badge = story["matchType"]
+        badge_map = MATCH_TYPE_COLORS
+    else:
+        title = f"{home} vs {away}"
+        body = (
+            f'<div style="font-size:1.12rem;color:#07122B;font-weight:900;margin-bottom:12px;line-height:1.35;">'
+            f'This is the next Group {match["group"]} fixture to watch.</div>'
+            f'<div>Use Scenario Lab to test how this result could change the group table.</div>'
+        )
+        badge = _scheduled_match_type(match, st.session_state.get("selected_team"))
+        badge_map = MATCH_TYPE_COLORS
 
     st.markdown(
         card_html(
-            label=f"Group {match['group']} · {match['date']}",
-            title=f"{story['homeTeam']} {story['score']} {story['awayTeam']}",
-            body=(
-                f'<div style="font-size:1.05rem;color:#0F172A;font-weight:850;margin-bottom:10px;">'
-                f'{escape_html(story["oneLiner"])}</div>'
-                f'<div>{escape_html(story["takeaway"])}</div>'
-            ),
-            accent="#BE123C",
+            label=f"Selected story · Group {match['group']}",
+            title=title,
+            body=body,
+            badge=badge,
+            badge_color_map=badge_map,
+            accent="#2563EB",
             large=True,
         ),
         unsafe_allow_html=True,
     )
 
-    col1, col2, col3 = st.columns(3)
-
-    verdict = story["scorelineVerdict"]
-    with col1:
+    c1, c2 = st.columns(2)
+    with c1:
         st.markdown(
             card_html(
-                label="Scoreline read",
-                title=verdict["verdict"],
-                body=badge_html(verdict["verdict"], VERDICT_COLORS),
-                footer=verdict["reason"],
-                accent=VERDICT_COLORS.get(verdict["verdict"], "#64748B"),
+                label="Why this matters",
+                title=f"Group {match['group']} context is now open.",
+                body="Why It Matters explains this group without making you hunt through every table.",
+                accent="#F59E0B",
             ),
             unsafe_allow_html=True,
         )
-
-    drama = story["dramaMeter"]
-    drama_color = DRAMA_COLORS.get(drama["label"], "#1D4ED8")
-    with col2:
+        if st.button("Open Why It Matters →", key="go_why_from_match", use_container_width=True):
+            st.session_state["active_view"] = "why"
+            st.rerun()
+    with c2:
         st.markdown(
             card_html(
-                label="Match mood",
-                title=drama["label"],
-                body=progress_html(drama["score"], drama_color),
-                footer=f"{drama['score']}/100. Closeness, stakes, and upset tension.",
-                accent=drama_color,
+                label="Next step",
+                title="Use Scenario Lab for this same group.",
+                body="Scenario controls default to the selected group and team from this board.",
+                accent="#2563EB",
             ),
             unsafe_allow_html=True,
         )
-
-    with col3:
-        st.markdown(
-            card_html(
-                label="Match type",
-                title=story["matchType"],
-                body=badge_html(story["matchType"], MATCH_TYPE_COLORS),
-                footer="A simple personality label for the match.",
-                accent=MATCH_TYPE_COLORS.get(story["matchType"], "#64748B"),
-            ),
-            unsafe_allow_html=True,
-        )
-
-    col_a, col_b = st.columns([1.2, 1])
-    with col_a:
-        st.markdown(
-            card_html(
-                label="What this means",
-                title="Tournament impact",
-                body=(
-                    f'{escape_html(story["takeaway"])} '
-                    f'The result matters most when read through the group table in the sidebar.'
-                ),
-                accent="#BE123C",
-            ),
-            unsafe_allow_html=True,
-        )
-
-    with col_b:
-        momentum = story["momentumMovie"]
-        st.markdown(
-            card_html(
-                label="Momentum movie",
-                title="The match in three beats",
-                body=(
-                    f'<strong>Opening:</strong> {escape_html(momentum["early"])}<br>'
-                    f'<strong>Middle:</strong> {escape_html(momentum["middle"])}<br>'
-                    f'<strong>Final:</strong> {escape_html(momentum["late"])}'
-                ),
-                footer=momentum["disclaimer"],
-                accent="#D6A84F",
-            ),
-            unsafe_allow_html=True,
-        )
+        if st.button("Open Scenario Lab →", key="go_scenario_from_match", use_container_width=True):
+            st.session_state["active_view"] = "scenario"
+            st.rerun()
 
     st.markdown(
-        """
-        <div class="wcdl-note-compact">
-          <strong>Method note</strong>
-          Match Mood = tension, closeness, upset context, and qualification stakes. No xG, shot data, or betting odds are used.
-        </div>
-        """,
+        card_html(
+            label="Current group table",
+            title=f"Group {match['group']} table and status",
+            body=_standings_with_status(data, match["group"]),
+            accent="#2563EB",
+            large=True,
+        ),
         unsafe_allow_html=True,
     )
+
+
+def render(data):
+    ensure_selection_state(data)
+    _render_team_group_controls(data)
+    group_id = st.session_state["selected_group"]
+    _render_group_header(data, group_id)
+
+    left, right = st.columns([1, 1.08])
+    with left:
+        _render_group_match_board(data, group_id)
+    with right:
+        _render_selected_story(data)

@@ -1,6 +1,6 @@
 
 """
-Explain Soccer view
+Why It Matters view
 
 Plain-English group/team context with a more editorial layout.
 """
@@ -60,7 +60,7 @@ def _render_group_table(rows, teams):
 
 def _render_survival_card(card):
     body = (
-        f'<div style="font-size:1.05rem;color:#F8FAFC;font-weight:800;margin-bottom:10px;">'
+        f'<div style="font-size:1.05rem;color:#07122B;font-weight:850;margin-bottom:10px;">'
         f'{escape_html(card["fanTranslation"])}</div>'
         f'<div><strong>Mood:</strong> {escape_html(card["mood"])}</div>'
         f'<div><strong>Controls fate:</strong> {escape_html(card["controlsFate"])}</div>'
@@ -83,46 +83,46 @@ def _render_survival_card(card):
 
 
 def render(data):
+    from lib.state_helpers import ensure_selection_state
+    ensure_selection_state(data)
     teams = data["team_by_id"]
     groups = data["groups"]
 
-    chaos_rank = rank_group_chaos(data)[:4]
     st.markdown(
         """
         <div class="wcdl-section-title">
-          <h3>Group chaos meter</h3>
-          <div class="wcdl-section-note">Which groups are still open, messy, or close to settled.</div>
+          <h3>Why this group matters</h3>
+          <div class="wcdl-section-note">This view inherits the match/team/group selected in Match Desk.</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    chaos_cols = st.columns(4)
-    for col, chaos in zip(chaos_cols, chaos_rank):
-        color = CHAOS_COLORS.get(chaos["label"], "#60A5FA")
-        with col:
-            st.markdown(
-                stat_card_html(
-                    f"Group {chaos['group']}",
-                    chaos["label"],
-                    "; ".join(chaos["reasons"][:2]),
-                    accent=color,
-                    badge=f"{chaos['score']}/100",
-                    badge_color_map={f"{chaos['score']}/100": color},
-                ),
-                unsafe_allow_html=True,
-            )
 
-    st.divider()
+    selected_group_for_view = st.session_state.get("selected_group", groups[0]["id"])
+    if st.session_state.get("_why_synced_group") != selected_group_for_view:
+        st.session_state["why_group_context"] = selected_group_for_view
+        st.session_state["_why_synced_group"] = selected_group_for_view
 
-    col_target, col_style = st.columns([2, 1])
-    with col_target:
-        target_kind = st.radio("Choose what to explain", ["Group", "Team"], horizontal=True)
-    with col_style:
+    c1, c2 = st.columns([1, 1])
+    with c1:
+        group_id = st.selectbox(
+            "Group context",
+            [g["id"] for g in groups],
+            index=[g["id"] for g in groups].index(st.session_state.get("selected_group", groups[0]["id"])),
+            format_func=lambda g: f"Group {g}",
+            key="why_group_context",
+        )
+        if group_id != st.session_state.get("selected_group"):
+            st.session_state["selected_group"] = group_id
+            group_team_ids = data["group_by_id"][group_id]["teamIds"]
+            if st.session_state.get("selected_team") not in group_team_ids:
+                st.session_state["selected_team"] = group_team_ids[0]
+    with c2:
         style_label = st.selectbox("Explain it for", ["Complete Beginner", "American Sports Fan"])
         style = "sports_fan" if style_label == "American Sports Fan" else "complete_beginner"
 
+    target_kind = "Group"
     if target_kind == "Group":
-        group_id = st.selectbox("Group", [g["id"] for g in groups], format_func=lambda g: f"Group {g}")
         rows = _standings_with_qualification(group_id, data)
         chaos = calculate_group_chaos(group_id, data)
         chaos_color = CHAOS_COLORS.get(chaos["label"], "#60A5FA")
@@ -137,11 +137,21 @@ def render(data):
                     f'<div>{escape_html(explanation["translation"])}</div>'
                     f'{progress_html(chaos["score"], chaos_color)}'
                     f'<div style="color:#64748B;">{"; ".join(escape_html(r) for r in chaos["reasons"])}</div>'
-                    f'<div style="margin-top:10px;color:#64748B;font-size:.9rem;">Use the sidebar for the full standings table.</div>'
+                    f'<div style="margin-top:10px;color:#64748B;font-size:.9rem;">The selected group table appears below.</div>'
                 ),
                 badge="Group Chaos",
                 badge_color_map=PULSE_COLORS,
                 accent=chaos_color,
+                large=True,
+            ),
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            card_html(
+                label="Selected group table",
+                title=f"Group {group_id}",
+                body=_render_group_table(rows, teams),
+                accent="#0F172A",
                 large=True,
             ),
             unsafe_allow_html=True,
@@ -209,9 +219,9 @@ def render(data):
         st.markdown(
             card_html(
                 label="Tell your friend",
-                title="One sentence version",
-                body=f'<div style="font-size:1.1rem;color:#F8FAFC;font-weight:800;">{escape_html(explanation["tellYourFriend"])}</div>',
-                accent="#A78BFA",
+                title=explanation["tellYourFriend"],
+                body="Use this as the quick one-sentence explanation for someone casually watching the group.",
+                accent="#2563EB",
             ),
             unsafe_allow_html=True,
         )

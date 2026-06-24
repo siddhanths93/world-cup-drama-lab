@@ -22,7 +22,7 @@ def build_tournament_pulse(data):
     most_chaotic = chaos[0] if chaos else {"group": "N/A", "score": 0, "label": "Settled", "reasons": []}
 
     survival_cards = [build_survival_card(t["id"], data) for t in data["teams"]]
-    pressure_order = {"Danger Zone": 5, "Calculator Mode": 4, "Needs a Miracle": 3, "In Control": 2, "Safe": 1, "Eliminated": 0}
+    pressure_order = {"Needs Help": 5, "Bubble Watch": 4, "In Control": 2, "Safe": 1, "Eliminated": 0}
     pressure = sorted(
         survival_cards,
         key=lambda c: (pressure_order.get(c["status"], 0), -c["points"]),
