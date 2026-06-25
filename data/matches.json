@@ -682,8 +682,8 @@
     "homeTeam": "cuw",
     "awayTeam": "civ",
     "homeScore": 0,
-    "awayScore": 1,
-    "status": "live",
+    "awayScore": 2,
+    "status": "completed",
     "date": "2026-06-25",
     "events": [],
     "source": "football-data.org-sync"
@@ -694,9 +694,9 @@
     "group": "E",
     "homeTeam": "ecu",
     "awayTeam": "ger",
-    "homeScore": 1,
+    "homeScore": 2,
     "awayScore": 1,
-    "status": "live",
+    "status": "completed",
     "date": "2026-06-25",
     "events": [],
     "source": "football-data.org-sync"
