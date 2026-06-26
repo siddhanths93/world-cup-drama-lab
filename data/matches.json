@@ -747,8 +747,8 @@
     "homeTeam": "nor",
     "awayTeam": "fra",
     "homeScore": 1,
-    "awayScore": 3,
-    "status": "live",
+    "awayScore": 4,
+    "status": "completed",
     "date": "2026-06-26",
     "events": [],
     "source": "football-data.org-sync"
@@ -759,9 +759,9 @@
     "group": "I",
     "homeTeam": "sen",
     "awayTeam": "irq",
-    "homeScore": 1,
+    "homeScore": 5,
     "awayScore": 0,
-    "status": "live",
+    "status": "completed",
     "date": "2026-06-26",
     "events": [],
     "source": "football-data.org-sync"
