@@ -882,5 +882,57 @@
     "date": "2026-06-28",
     "events": [],
     "source": "football-data.org-sync"
+  },
+  {
+    "id": "rsa-can-2026-06-28",
+    "externalId": 537417,
+    "group": "LAST_32",
+    "homeTeam": "rsa",
+    "awayTeam": "can",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-28",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "bra-jpn-2026-06-29",
+    "externalId": 537423,
+    "group": "LAST_32",
+    "homeTeam": "bra",
+    "awayTeam": "jpn",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-29",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "ned-mar-2026-06-30",
+    "externalId": 537418,
+    "group": "LAST_32",
+    "homeTeam": "ned",
+    "awayTeam": "mar",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-06-30",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "usa-bih-2026-07-02",
+    "externalId": 537421,
+    "group": "LAST_32",
+    "homeTeam": "usa",
+    "awayTeam": "bih",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-02",
+    "events": [],
+    "source": "football-data.org-sync"
   }
 ]
