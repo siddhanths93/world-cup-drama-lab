@@ -774,7 +774,7 @@
     "awayTeam": "irn",
     "homeScore": 1,
     "awayScore": 1,
-    "status": "live",
+    "status": "completed",
     "date": "2026-06-27",
     "events": [],
     "source": "football-data.org-sync"
@@ -785,9 +785,9 @@
     "group": "G",
     "homeTeam": "nzl",
     "awayTeam": "bel",
-    "homeScore": 0,
-    "awayScore": 1,
-    "status": "live",
+    "homeScore": 1,
+    "awayScore": 5,
+    "status": "completed",
     "date": "2026-06-27",
     "events": [],
     "source": "football-data.org-sync"
