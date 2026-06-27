@@ -164,6 +164,9 @@ def find_existing_match(existing_matches, home_id, away_id, api_id=None, group=N
     3. Fall back to group + unordered team pair.
 
     Do NOT use date as identity. UTC/local date shifts can create duplicates.
+    Important: when unordered fallback matches, update_matches_from_api must
+    overwrite homeTeam/awayTeam from the API before saving scores. Scores are
+    directional and cannot be copied onto stale local orientation.
     """
     if api_id is not None:
         for idx, m in enumerate(existing_matches):
@@ -310,6 +313,13 @@ def update_matches_from_api(existing, api_matches, team_lookup):
 
         m["externalId"] = api_id
         m["source"] = "football-data.org-sync"
+
+        # Critical: scores are directional. The fallback matcher may find an
+        # existing fixture by unordered team pair, but the API score belongs
+        # to the API's current home/away orientation. Always refresh the
+        # local orientation before writing scores.
+        m["homeTeam"] = home_id
+        m["awayTeam"] = away_id
 
         if group and group != "TBD":
             m["group"] = group
