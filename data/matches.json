@@ -890,8 +890,8 @@
     "homeTeam": "rsa",
     "awayTeam": "can",
     "homeScore": 0,
-    "awayScore": 0,
-    "status": "live",
+    "awayScore": 1,
+    "status": "completed",
     "date": "2026-06-28",
     "events": [],
     "source": "football-data.org-sync"
