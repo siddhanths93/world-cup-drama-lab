@@ -902,9 +902,9 @@
     "group": "LAST_32",
     "homeTeam": "bra",
     "awayTeam": "jpn",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
+    "homeScore": 0,
+    "awayScore": 1,
+    "status": "live",
     "date": "2026-06-29",
     "events": [],
     "source": "football-data.org-sync"
