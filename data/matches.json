@@ -928,9 +928,9 @@
     "group": "LAST_32",
     "homeTeam": "civ",
     "awayTeam": "nor",
-    "homeScore": 0,
-    "awayScore": 1,
-    "status": "live",
+    "homeScore": 1,
+    "awayScore": 2,
+    "status": "completed",
     "date": "2026-06-30",
     "events": [],
     "source": "football-data.org-sync"
