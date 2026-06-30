@@ -915,9 +915,9 @@
     "group": "LAST_32",
     "homeTeam": "ger",
     "awayTeam": "par",
-    "homeScore": 1,
-    "awayScore": 1,
-    "status": "live",
+    "homeScore": 5,
+    "awayScore": 6,
+    "status": "completed",
     "date": "2026-06-29",
     "events": [],
     "source": "football-data.org-sync"
