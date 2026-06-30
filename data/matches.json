@@ -1066,6 +1066,19 @@
     "source": "football-data.org-sync"
   },
   {
+    "id": "can-mar-2026-07-04",
+    "externalId": 537376,
+    "group": "LAST_16",
+    "homeTeam": "can",
+    "awayTeam": "mar",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-04",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
     "id": "col-gha-2026-07-04",
     "externalId": 537430,
     "group": "LAST_32",
