@@ -941,9 +941,9 @@
     "group": "LAST_32",
     "homeTeam": "fra",
     "awayTeam": "swe",
-    "homeScore": 2,
+    "homeScore": 3,
     "awayScore": 0,
-    "status": "live",
+    "status": "completed",
     "date": "2026-06-30",
     "events": [],
     "source": "football-data.org-sync"
