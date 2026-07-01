@@ -980,9 +980,9 @@
     "group": "LAST_32",
     "homeTeam": "eng",
     "awayTeam": "cod",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
+    "homeScore": 2,
+    "awayScore": 1,
+    "status": "completed",
     "date": "2026-07-01",
     "events": [],
     "source": "football-data.org-sync"
