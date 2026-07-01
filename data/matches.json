@@ -1079,6 +1079,19 @@
     "source": "football-data.org-sync"
   },
   {
+    "id": "par-fra-2026-07-04",
+    "externalId": 537375,
+    "group": "LAST_16",
+    "homeTeam": "par",
+    "awayTeam": "fra",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-04",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
     "id": "col-gha-2026-07-04",
     "externalId": 537430,
     "group": "LAST_32",
@@ -1088,6 +1101,19 @@
     "awayScore": null,
     "status": "scheduled",
     "date": "2026-07-04",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "bra-nor-2026-07-05",
+    "externalId": 537377,
+    "group": "LAST_16",
+    "homeTeam": "bra",
+    "awayTeam": "nor",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-05",
     "events": [],
     "source": "football-data.org-sync"
   }
