@@ -1116,5 +1116,31 @@
     "date": "2026-07-05",
     "events": [],
     "source": "football-data.org-sync"
+  },
+  {
+    "id": "mex-eng-2026-07-06",
+    "externalId": 537378,
+    "group": "LAST_16",
+    "homeTeam": "mex",
+    "awayTeam": "eng",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-06",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "usa-bel-2026-07-07",
+    "externalId": 537380,
+    "group": "LAST_16",
+    "homeTeam": "usa",
+    "awayTeam": "bel",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-07",
+    "events": [],
+    "source": "football-data.org-sync"
   }
 ]
