@@ -1006,9 +1006,9 @@
     "group": "LAST_32",
     "homeTeam": "esp",
     "awayTeam": "aut",
-    "homeScore": 1,
+    "homeScore": 3,
     "awayScore": 0,
-    "status": "live",
+    "status": "completed",
     "date": "2026-07-02",
     "events": [],
     "source": "football-data.org-sync"
