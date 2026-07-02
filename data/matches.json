@@ -1032,9 +1032,9 @@
     "group": "LAST_32",
     "homeTeam": "usa",
     "awayTeam": "bih",
-    "homeScore": 0,
+    "homeScore": 2,
     "awayScore": 0,
-    "status": "live",
+    "status": "completed",
     "date": "2026-07-02",
     "events": [],
     "source": "football-data.org-sync"
