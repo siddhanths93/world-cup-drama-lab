@@ -1060,7 +1060,7 @@
     "awayTeam": "alg",
     "homeScore": 2,
     "awayScore": 0,
-    "status": "live",
+    "status": "completed",
     "date": "2026-07-03",
     "events": [],
     "source": "football-data.org-sync"
