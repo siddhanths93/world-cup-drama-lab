@@ -1072,8 +1072,8 @@
     "homeTeam": "can",
     "awayTeam": "mar",
     "homeScore": 0,
-    "awayScore": 0,
-    "status": "live",
+    "awayScore": 3,
+    "status": "completed",
     "date": "2026-07-04",
     "events": [],
     "source": "football-data.org-sync"
