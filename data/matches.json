@@ -1085,7 +1085,7 @@
     "homeTeam": "par",
     "awayTeam": "fra",
     "homeScore": 0,
-    "awayScore": 0,
+    "awayScore": 1,
     "status": "live",
     "date": "2026-07-04",
     "events": [],
