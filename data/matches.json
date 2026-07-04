@@ -1131,6 +1131,45 @@
     "source": "football-data.org-sync"
   },
   {
+    "id": "por-esp-2026-07-06",
+    "externalId": 537379,
+    "group": "LAST_16",
+    "homeTeam": "por",
+    "awayTeam": "esp",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-06",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "arg-egy-2026-07-07",
+    "externalId": 537381,
+    "group": "LAST_16",
+    "homeTeam": "arg",
+    "awayTeam": "egy",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-07",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "sui-col-2026-07-07",
+    "externalId": 537382,
+    "group": "LAST_16",
+    "homeTeam": "sui",
+    "awayTeam": "col",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-07",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
     "id": "usa-bel-2026-07-07",
     "externalId": 537380,
     "group": "LAST_16",
