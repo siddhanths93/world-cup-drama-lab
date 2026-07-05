@@ -1181,5 +1181,18 @@
     "date": "2026-07-07",
     "events": [],
     "source": "football-data.org-sync"
+  },
+  {
+    "id": "fra-mar-2026-07-09",
+    "externalId": 537383,
+    "group": "QUARTER_FINALS",
+    "homeTeam": "fra",
+    "awayTeam": "mar",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-09",
+    "events": [],
+    "source": "football-data.org-sync"
   }
 ]
