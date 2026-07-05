@@ -1086,7 +1086,7 @@
     "awayTeam": "fra",
     "homeScore": 0,
     "awayScore": 1,
-    "status": "live",
+    "status": "completed",
     "date": "2026-07-04",
     "events": [],
     "source": "football-data.org-sync"
