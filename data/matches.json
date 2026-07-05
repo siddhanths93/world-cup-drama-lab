@@ -1110,9 +1110,9 @@
     "group": "LAST_16",
     "homeTeam": "bra",
     "awayTeam": "nor",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "live",
     "date": "2026-07-05",
     "events": [],
     "source": "football-data.org-sync"
