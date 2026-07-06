@@ -1137,8 +1137,8 @@
     "homeTeam": "por",
     "awayTeam": "esp",
     "homeScore": 0,
-    "awayScore": 0,
-    "status": "live",
+    "awayScore": 1,
+    "status": "completed",
     "date": "2026-07-06",
     "events": [],
     "source": "football-data.org-sync"
