@@ -1123,9 +1123,9 @@
     "group": "LAST_16",
     "homeTeam": "mex",
     "awayTeam": "eng",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
+    "homeScore": 2,
+    "awayScore": 3,
+    "status": "completed",
     "date": "2026-07-06",
     "events": [],
     "source": "football-data.org-sync"
