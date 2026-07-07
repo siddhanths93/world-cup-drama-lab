@@ -1196,6 +1196,19 @@
     "source": "football-data.org-sync"
   },
   {
+    "id": "esp-bel-2026-07-10",
+    "externalId": 537384,
+    "group": "QUARTER_FINALS",
+    "homeTeam": "esp",
+    "awayTeam": "bel",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-10",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
     "id": "nor-eng-2026-07-11",
     "externalId": 537385,
     "group": "QUARTER_FINALS",
