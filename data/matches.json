@@ -1175,9 +1175,9 @@
     "group": "LAST_16",
     "homeTeam": "usa",
     "awayTeam": "bel",
-    "homeScore": 0,
-    "awayScore": 1,
-    "status": "live",
+    "homeScore": 1,
+    "awayScore": 4,
+    "status": "completed",
     "date": "2026-07-07",
     "events": [],
     "source": "football-data.org-sync"
