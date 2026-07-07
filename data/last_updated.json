@@ -1,10 +1,10 @@
 {
-  "lastSyncedAt": "2026-07-07T20:54:23+00:00",
+  "lastSyncedAt": "2026-07-07T22:18:08+00:00",
   "source": "football-data.org",
   "competition": "WC",
   "season": "2026",
   "matchesReturned": 104,
-  "matchesUpdated": 2,
+  "matchesUpdated": 1,
   "matchesAdded": 0,
   "skipped": [
     "Could not map team(s): Australia vs Turkey",
