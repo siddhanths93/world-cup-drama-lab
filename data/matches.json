@@ -1220,5 +1220,18 @@
     "date": "2026-07-11",
     "events": [],
     "source": "football-data.org-sync"
+  },
+  {
+    "id": "arg-sui-2026-07-12",
+    "externalId": 537386,
+    "group": "QUARTER_FINALS",
+    "homeTeam": "arg",
+    "awayTeam": "sui",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-12",
+    "events": [],
+    "source": "football-data.org-sync"
   }
 ]
