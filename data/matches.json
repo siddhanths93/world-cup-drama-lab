@@ -1125,7 +1125,7 @@
     "awayTeam": "eng",
     "homeScore": 2,
     "awayScore": 3,
-    "status": "completed",
+    "status": "scheduled",
     "date": "2026-07-06",
     "events": [],
     "source": "football-data.org-sync"
@@ -1214,9 +1214,9 @@
     "group": "QUARTER_FINALS",
     "homeTeam": "nor",
     "awayTeam": "eng",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
+    "homeScore": 1,
+    "awayScore": 1,
+    "status": "live",
     "date": "2026-07-11",
     "events": [],
     "source": "football-data.org-sync"
