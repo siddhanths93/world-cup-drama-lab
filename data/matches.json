@@ -1233,5 +1233,18 @@
     "date": "2026-07-12",
     "events": [],
     "source": "football-data.org-sync"
+  },
+  {
+    "id": "fra-esp-2026-07-14",
+    "externalId": 537387,
+    "group": "SEMI_FINALS",
+    "homeTeam": "fra",
+    "awayTeam": "esp",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-14",
+    "events": [],
+    "source": "football-data.org-sync"
   }
 ]
