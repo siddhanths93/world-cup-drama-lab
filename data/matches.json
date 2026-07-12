@@ -1227,9 +1227,9 @@
     "group": "QUARTER_FINALS",
     "homeTeam": "arg",
     "awayTeam": "sui",
-    "homeScore": null,
-    "awayScore": null,
-    "status": "scheduled",
+    "homeScore": 2,
+    "awayScore": 1,
+    "status": "live",
     "date": "2026-07-12",
     "events": [],
     "source": "football-data.org-sync"
