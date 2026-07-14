@@ -1241,8 +1241,8 @@
     "homeTeam": "fra",
     "awayTeam": "esp",
     "homeScore": 0,
-    "awayScore": 1,
-    "status": "live",
+    "awayScore": 2,
+    "status": "completed",
     "date": "2026-07-14",
     "events": [],
     "source": "football-data.org-sync"
