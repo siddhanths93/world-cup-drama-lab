@@ -1253,9 +1253,9 @@
     "group": "SEMI_FINALS",
     "homeTeam": "eng",
     "awayTeam": "arg",
-    "homeScore": 0,
-    "awayScore": 0,
-    "status": "live",
+    "homeScore": 1,
+    "awayScore": 2,
+    "status": "completed",
     "date": "2026-07-15",
     "events": [],
     "source": "football-data.org-sync"
