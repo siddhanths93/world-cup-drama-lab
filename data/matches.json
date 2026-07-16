@@ -1259,5 +1259,31 @@
     "date": "2026-07-15",
     "events": [],
     "source": "football-data.org-sync"
+  },
+  {
+    "id": "fra-eng-2026-07-18",
+    "externalId": 537389,
+    "group": "THIRD_PLACE",
+    "homeTeam": "fra",
+    "awayTeam": "eng",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-18",
+    "events": [],
+    "source": "football-data.org-sync"
+  },
+  {
+    "id": "esp-arg-2026-07-19",
+    "externalId": 537390,
+    "group": "FINAL",
+    "homeTeam": "esp",
+    "awayTeam": "arg",
+    "homeScore": null,
+    "awayScore": null,
+    "status": "scheduled",
+    "date": "2026-07-19",
+    "events": [],
+    "source": "football-data.org-sync"
   }
 ]

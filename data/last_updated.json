@@ -1,11 +1,11 @@
 {
-  "lastSyncedAt": "2026-07-16T03:31:21+00:00",
+  "lastSyncedAt": "2026-07-16T06:26:54+00:00",
   "source": "football-data.org",
   "competition": "WC",
   "season": "2026",
   "matchesReturned": 104,
   "matchesUpdated": 0,
-  "matchesAdded": 0,
+  "matchesAdded": 2,
   "skipped": [
     "Could not map team(s): Australia vs Turkey",
     "Could not map team(s): Spain vs Cape Verde Islands",
@@ -13,9 +13,7 @@
     "Could not map team(s): Uruguay vs Cape Verde Islands",
     "Could not map team(s): Turkey vs United States",
     "Could not map team(s): Cape Verde Islands vs Saudi Arabia",
-    "Could not map team(s): Argentina vs Cape Verde Islands",
-    "Skipped TBD/unassigned fixture: France vs None",
-    "Skipped TBD/unassigned fixture: Spain vs None"
+    "Could not map team(s): Argentina vs Cape Verde Islands"
   ],
   "notes": "Free-tier scores/schedules may be delayed. Public app reads from local JSON."
 }
