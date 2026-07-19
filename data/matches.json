@@ -1266,9 +1266,9 @@
     "group": "THIRD_PLACE",
     "homeTeam": "fra",
     "awayTeam": "eng",
-    "homeScore": 3,
-    "awayScore": 5,
-    "status": "live",
+    "homeScore": 4,
+    "awayScore": 6,
+    "status": "completed",
     "date": "2026-07-18",
     "events": [],
     "source": "football-data.org-sync"
