@@ -1281,7 +1281,7 @@
     "awayTeam": "arg",
     "homeScore": 1,
     "awayScore": 0,
-    "status": "live",
+    "status": "completed",
     "date": "2026-07-19",
     "events": [],
     "source": "football-data.org-sync"
